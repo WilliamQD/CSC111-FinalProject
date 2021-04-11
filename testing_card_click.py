@@ -63,7 +63,7 @@ def add_card_to_player_group_random() -> None:
             possible_choices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
             chosen = random.choice(possible_choices)
-            location = (key * 2, 7)
+            location = ((key - 1) * 2, 7)
             if chosen == 1:
                 player_card_group[key] = miniguner(location)
             elif chosen == 2:
