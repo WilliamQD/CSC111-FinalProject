@@ -74,11 +74,13 @@ def draw_all_image() -> None:
     """draw the cards both in player_card_group and card_group.
     """
     for x in player_card_group:
-        location = player_card_group[x].get_real_location()
-        screen.blit(player_card_group[x].images[player_card_group[x].display_mode], location)
+        if player_card_group[x] is not None:
+            location = player_card_group[x].get_real_location()
+            screen.blit(player_card_group[x].images[player_card_group[x].display_mode], location)
     for y in card_group:
-        location = card_group[y].get_real_location()
-        screen.blit(card_group[y].images[card_group[y].display_mode], location)
+        if card_group[y] is not None:
+            location = card_group[y].get_real_location()
+            screen.blit(card_group[y].images[card_group[y].display_mode], location)
 
 
 def draw_bone_map(surface: pygame.Surface) -> None:
@@ -104,8 +106,23 @@ def draw_all_visual_line() -> None:
     """draw all line in line group.
     """
     for x in line_group:
-        for y in line_group[x]:
-            pygame.draw.line(screen, color_group[x], y[0], y[1])
+        pygame.draw.line(screen, color_group[x], line_group[x][0], line_group[x][1])
+
+
+def enclose_selected_card(c: card) -> None:
+    """set enclosed card.
+    """
+    loc = c.get_real_location()
+    color_group['enclosed_card_1'] = THECOLORS['blue']
+    color_group['enclosed_card_2'] = THECOLORS['blue']
+    color_group['enclosed_card_3'] = THECOLORS['blue']
+    color_group['enclosed_card_4'] = THECOLORS['blue']
+    line_group['enclosed_card_1'] = [loc, (loc[0] + 2 * square_size[0], loc[1])]
+    line_group['enclosed_card_2'] = [loc, (loc[0], loc[1] + 2 * square_size[1])]
+    line_group['enclosed_card_3'] = [(loc[0], loc[1] + 2 * square_size[1]),
+                                     (loc[0] + 2 * square_size[0], loc[1] + 2 * square_size[1])]
+    line_group['enclosed_card_4'] = [(loc[0] + 2 * square_size[0], loc[1]),
+                                     (loc[0] + 2 * square_size[0], loc[1] + 2 * square_size[1])]
 
 
 ####################################################
@@ -183,18 +200,19 @@ def remove_from_player_group(group: dict, key: int) -> None:
     """Set the element to None in the player group by key.
     """
     if key in group:
-        group[key] = None
+        group[key] = 'Hello world'
 
 
 def add_card_to_player_group_random() -> None:
     """Add a card to a group.
     """
     for key in player_card_group:
-        if player_card_group[key] is None:
+        if player_card_group[key] == 'Hello world':
+            print('action begin')
             possible_choices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
             chosen = random.choice(possible_choices)
-            location = (len(player_card_group) * 2, 7)
+            location = ((key - 1) * 2, 7)
             if chosen == 1:
                 player_card_group[key] = miniguner(location)
             elif chosen == 2:
@@ -232,10 +250,11 @@ def graph_click(m: Map, event: pygame.event.Event) -> Square:
 def card_click(event: pygame.event.Event) -> card:
     """Return which card is clicked.
     """
-    x = event.pos[0]
-    square_x = (x // square_size[0]) // 2 + 1
+    mouse_x = event.pos[0]
+    square_x = (mouse_x // square_size[0]) // 2 + 1
     print(square_x)
-    mark = player_card_group.pop(int(square_x))
+    mark = player_card_group[int(square_x)]
+    enclose_selected_card(mark)
     remove_from_player_group(player_card_group, int(square_x))
     return mark
 
@@ -260,12 +279,11 @@ while True:  # 游戏主进程
                 selected_card = card_click(event)
                 clicked_card = True
     screen.fill(color)  # 填充颜色
-    for x in player_card_group:
-        if player_card_group[x] is None:
-            add_card_to_player_group_random()
-    draw_bone_map(screen)
+    add_card_to_player_group_random()
+    draw_all_visual_line()
     text_data_visualize(screen)
     refresh_visual_image(clicked_card, selected_card)
+    draw_bone_map(screen)
     pygame.display.flip()  # 刷新显示
 
 pygame.quit()
