@@ -125,10 +125,10 @@ class miniguner(card):
         """initialize the function.
         """
         super().__init__([image_miniguner, image_miniguner_card, image_miniguner_square], location)
-        self.hp = ...
-        self.attack = ...
+        self.hp = 20
+        self.attack = 5
         self.weight = ...
-        self.value = ...
+        self.value = 5
         self.location = location
         self.type = 'soldier'
         self.attack_system = 'light'
@@ -154,10 +154,10 @@ class charger(card):
         """initialize the function.
         """
         super().__init__([image_charger, image_charger_card, image_charger_square], location)
-        self.hp = ...
-        self.attack = ...
+        self.hp = 10
+        self.attack = 15
         self.weight = ...
-        self.value = ...
+        self.value = 5
         self.type = 'soldier'
         self.attack_system = 'light'
         self.define_system = 'light'
@@ -182,10 +182,10 @@ class sniper(card):
         """initialize the function.
         """
         super().__init__([image_sniper, image_sniper_card, image_sniper_square], location)
-        self.hp = ...
-        self.attack = ...
+        self.hp = 5
+        self.attack = 20
         self.weight = ...
-        self.value = ...
+        self.value = 7
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.define_system = 'light'
@@ -210,10 +210,10 @@ class rocketer(card):
         """initialize the function.
         """
         super().__init__([image_rocketer, image_rocketer_card, image_rocketer_square], location)
-        self.hp = ...
-        self.attack = ...
+        self.hp = 10
+        self.attack = 15
         self.weight = ...
-        self.value = ...
+        self.value = 5
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.define_system = 'heavy'
@@ -238,10 +238,10 @@ class doctor(card):
         """initialize the function.
         """
         super().__init__([image_doctor, image_doctor_card, image_doctor_square], location)
-        self.hp = ...
-        self.attack = ...
+        self.hp = 10
+        self.attack = 8
         self.weight = ...
-        self.value = ...
+        self.value = 5
         self.type = 'soldier'
         self.attack_system = None
         self.define_system = 'light'
@@ -266,10 +266,10 @@ class nijia(card):
         """initialize the function.
         """
         super().__init__([image_nijia, image_nijia_card, image_nijia_square, location], location)
-        self.hp = ...
-        self.attack = ...
+        self.hp = 10
+        self.attack = 10
         self.weight = ...
-        self.value = ...
+        self.value = 7
         self.type = 'soldier'
         self.attack_system = 'light'
         self.define_system = 'light'
@@ -289,9 +289,9 @@ class fireball(card):
         """initialize the function.
         """
         super().__init__([image_fireball, image_fireball_card, image_fireball_square], location)
-        self.attack = ...
+        self.attack = 10
         self.weight = ...
-        self.value = ...
+        self.value = 10
         self.type = 'magic'
 
 
@@ -308,9 +308,9 @@ class lightening(card):
         """
         super().__init__([image_lightening, image_lightening_card, image_lightening_square],
                          location)
-        self.attack = ...
+        self.attack = 20
         self.weight = ...
-        self.value = ...
+        self.value = 10
         self.type = 'magic'
 
 
@@ -327,9 +327,10 @@ class mine(card):
         """initialize the function.
         """
         super().__init__([image_mine, image_mine_card, image_mine_square], location)
-        self.attack = ...
+        self.hp = 10
+        self.attack = 5
         self.weight = ...
-        self.value = ...
+        self.value = 10
         self.type = 'building'
 
 
@@ -346,7 +347,8 @@ class autogun(card):
         """initialize the function.
         """
         super().__init__([image_autogun, image_autogun_card, image_autogun_square], location)
-        self.attack = ...
+        self.hp = 20
+        self.attack = 5
         self.weight = ...
-        self.value = ...
+        self.value = 10
         self.type = 'building'
