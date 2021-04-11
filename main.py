@@ -21,6 +21,7 @@ enemy_hp = 100  # 敌方hp
 
 clicked_map = False  # 是否点击到图
 clicked_card = False  # 是否点击卡片
+decition_act = False  # 是否算回合
 turn_end = False  # 回合结束
 marked_square = None  # 点击到的地图
 selected_card = None  # 点击到的卡片
@@ -179,17 +180,32 @@ def text_data_visualize(surface: pygame.Surface) -> None:
 def refresh_visual_image(is_card_clicked: bool, c: card) -> None:
     """refresh visual image by input.
     """
-    global clicked_map, turn_end, clicked_card
-    if is_card_clicked is True and clicked_map is True:
+    global clicked_map, turn_end, clicked_card, decition_act
+    if decition_act is True:
         clicked_map = False
         turn_end = True
         clicked_card = False
         (x, y) = pygame.mouse.get_pos()
-        new_x = x // square_size[0] * square_size[0]
-        new_y = y // square_size[1] * square_size[0]
+        local_x = x // square_size[0]
+        local_y = y // square_size[1]
         if square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11 \
                 and square_size[1] < pygame.mouse.get_pos()[1] < square_size[1] * 7:
-            card_group[term] = [c, (new_x, new_y)]
+            if type(c) is miniguner:
+                card_group[term] = miniguner((local_x, local_y))
+            elif type(c) is charger:
+                card_group[term] = charger((local_x, local_y))
+            elif type(c) is sniper:
+                card_group[term] = sniper((local_x, local_y))
+            elif type(c) is rocketer:
+                card_group[term] = rocketer((local_x, local_y))
+            elif type(c) is doctor:
+                card_group[term] = doctor((local_x, local_y))
+            elif type(c) is nijia:
+                card_group[term] = nijia((local_x, local_y))
+            else:
+                pass
+            game_map_graph.get_vertex((local_x, local_y)).item = selected_card
+    decition_act = False
     draw_all_image()
 
 
@@ -275,6 +291,8 @@ while True:  # 游戏主进程
                     and square_size[1] < pygame.mouse.get_pos()[1] < square_size[1] * 7:
                 marked_square = graph_click(game_map_graph, event)
                 clicked_map = True
+                if clicked_card is True:
+                    decition_act = True
             elif square_size[1] * 7 < pygame.mouse.get_pos()[1]:
                 selected_card = card_click(event)
                 clicked_card = True
@@ -284,6 +302,7 @@ while True:  # 游戏主进程
     text_data_visualize(screen)
     refresh_visual_image(clicked_card, selected_card)
     draw_bone_map(screen)
+    draw_all_visual_line()
     pygame.display.flip()  # 刷新显示
 
 pygame.quit()
