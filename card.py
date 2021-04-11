@@ -70,11 +70,12 @@ class card:
     display_mode: int
     location: Optional[tuple]  # This is a location based on screen divided by square, which is 9*12
 
-    def __init__(self, images: list[pygame.image], location: Optional[tuple]):
+    def __init__(self, images: list[pygame.image], location: Optional[tuple], direction: str = ''):
         """initialize the function
         """
         self.images = images
         self.display_mode = 0
+        self.direction = direction
         self.location = location
 
     def display_mode_refresh(self, new_mode: int):
@@ -121,10 +122,11 @@ class miniguner(card):
     special: Any
     range: int
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_miniguner, image_miniguner_card, image_miniguner_square], location)
+        super().__init__([image_miniguner, image_miniguner_card, image_miniguner_square],
+                         location, direction)
         self.hp = 20
         self.attack = 5
         self.weight = ...
@@ -150,10 +152,11 @@ class charger(card):
     special: Any
     range: int
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_charger, image_charger_card, image_charger_square], location)
+        super().__init__([image_charger, image_charger_card, image_charger_square],
+                         location, direction)
         self.hp = 10
         self.attack = 15
         self.weight = ...
@@ -178,10 +181,11 @@ class sniper(card):
     special: Any
     range: int
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_sniper, image_sniper_card, image_sniper_square], location)
+        super().__init__([image_sniper, image_sniper_card, image_sniper_square],
+                         location, direction)
         self.hp = 5
         self.attack = 20
         self.weight = ...
@@ -206,10 +210,11 @@ class rocketer(card):
     special: Any
     range: int
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_rocketer, image_rocketer_card, image_rocketer_square], location)
+        super().__init__([image_rocketer, image_rocketer_card, image_rocketer_square],
+                         location, direction)
         self.hp = 10
         self.attack = 15
         self.weight = ...
@@ -234,10 +239,11 @@ class doctor(card):
     special: Any
     range: int
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_doctor, image_doctor_card, image_doctor_square], location)
+        super().__init__([image_doctor, image_doctor_card, image_doctor_square],
+                         location, direction)
         self.hp = 10
         self.attack = 8
         self.weight = ...
@@ -262,10 +268,11 @@ class nijia(card):
     special: Any
     range: int
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_nijia, image_nijia_card, image_nijia_square, location], location)
+        super().__init__([image_nijia, image_nijia_card, image_nijia_square, location],
+                         location, direction)
         self.hp = 10
         self.attack = 10
         self.weight = ...
@@ -285,10 +292,11 @@ class fireball(card):
     value: int
     type: str
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_fireball, image_fireball_card, image_fireball_square], location)
+        super().__init__([image_fireball, image_fireball_card, image_fireball_square],
+                         location, direction)
         self.attack = 10
         self.weight = ...
         self.value = 10
@@ -303,11 +311,11 @@ class lightening(card):
     value: int
     type: str
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_lightening, image_lightening_card, image_lightening_square],
-                         location)
+                         location, direction)
         self.attack = 20
         self.weight = ...
         self.value = 10
@@ -323,10 +331,11 @@ class mine(card):
     value: int
     type: str
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_mine, image_mine_card, image_mine_square], location)
+        super().__init__([image_mine, image_mine_card, image_mine_square],
+                         location, direction)
         self.hp = 10
         self.attack = 5
         self.weight = ...
@@ -343,10 +352,11 @@ class autogun(card):
     value: int
     type: str
 
-    def __init__(self, location: Optional[tuple]):
+    def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
-        super().__init__([image_autogun, image_autogun_card, image_autogun_square], location)
+        super().__init__([image_autogun, image_autogun_card, image_autogun_square],
+                         location, direction)
         self.hp = 20
         self.attack = 5
         self.weight = ...

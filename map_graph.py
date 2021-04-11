@@ -28,6 +28,9 @@ class Square:
 class Map(Graph):
     """a graph that describe the map.
     The map is 6 * 10
+
+    Instance attributes:
+        - ...
     """
     _vertices: dict[Any, Square]
 
@@ -87,3 +90,36 @@ class Map(Graph):
         """ get a vertex by its location
         """
         return self._vertices[location]
+
+    def make_move(self, soldier_loc: tuple) -> None:
+        """Make the given soldier move.
+
+        Precondition:
+            - soldier.item is not None
+        """
+        curr_x = soldier_loc[0]
+        curr_y = soldier_loc[1]
+
+        if self._vertices[soldier_loc].item.direction == 'right':
+            if 1 <= curr_x < 10 \
+                    and 1 <= curr_y <= 6:
+                # Update the new location of soldier
+                self._vertices[soldier_loc].item.location = (curr_x + 1, curr_y)
+                new_location = curr_x + 1, curr_y
+
+                # Check whether the new_square has any soldier on it
+                if self._vertices[new_location].item is None:
+                    # Find the new square where the soldier would be,
+                    # and update the item on squares
+                    self._vertices[new_location].item, self._vertices[soldier_loc].item = \
+                        self._vertices[soldier_loc].item, None
+        else:
+            if 1 < curr_x <= 10 \
+                    and 1 <= curr_y <= 6:
+                # Update the new location of soldier
+                self._vertices[soldier_loc].item.location = (curr_x - 1, curr_y)
+                new_location = curr_x - 1, curr_y
+
+                if self._vertices[new_location].item is None:
+                    self._vertices[new_location].item, self._vertices[soldier_loc].item = \
+                        self._vertices[soldier_loc].item, None
