@@ -5,6 +5,19 @@ from typing import Any, Union
 
 class Square:
     """a vertex that describe the square.
+
+    Instance Attributes:
+        - item: A card or subclass of card stand on this square
+        - kind: A string represents what kind of landform this square is
+        - neighbours: The vertices (squares) that are adjacent to this vertex (square).
+        - location: A tuple represents location of this square on the map
+
+    Preconditions:
+        - kind in {待输入}
+        - self not in self.neighbours
+        - all(self in u.neighbours for u in self.neighbours)
+        - 1 <= location[0] <= 10
+        - 1 <= location[1] <= 6
     """
     item: Any
     kind: Union[None, str]
@@ -17,7 +30,7 @@ class Square:
         This vertex is initialized with no neighbours.
 
         Preconditions:
-            - kind in {'user', 'book'}
+            - kind in {待输入}
         """
         self.item = item
         self.kind = kind
@@ -30,7 +43,8 @@ class Map(Graph):
     The map is 6 * 10
 
     Instance attributes:
-        - ...
+        - A collection of the squares contained in this map.
+        Maps item to Square object.
     """
     _vertices: dict[Any, Square]
 
@@ -103,23 +117,53 @@ class Map(Graph):
         if self._vertices[soldier_loc].item.direction == 'right':
             if 1 <= curr_x < 10 \
                     and 1 <= curr_y <= 6:
-                # Update the new location of soldier
-                self._vertices[soldier_loc].item.location = (curr_x + 1, curr_y)
+                # Find the new square where the soldier would be
                 new_location = curr_x + 1, curr_y
 
                 # Check whether the new_square has any soldier on it
                 if self._vertices[new_location].item is None:
-                    # Find the new square where the soldier would be,
+                    # Update the new location of soldier,
                     # and update the item on squares
+                    self._vertices[soldier_loc].item.location = new_location
                     self._vertices[new_location].item, self._vertices[soldier_loc].item = \
                         self._vertices[soldier_loc].item, None
         else:
             if 1 < curr_x <= 10 \
                     and 1 <= curr_y <= 6:
-                # Update the new location of soldier
-                self._vertices[soldier_loc].item.location = (curr_x - 1, curr_y)
                 new_location = curr_x - 1, curr_y
 
                 if self._vertices[new_location].item is None:
+                    self._vertices[soldier_loc].item.location = new_location
                     self._vertices[new_location].item, self._vertices[soldier_loc].item = \
                         self._vertices[soldier_loc].item, None
+
+    def attack(self, card_loc: tuple) -> None:
+        """Make the given card on that location attack if enemy is in his/her attack range.
+        """
+        # 判断是否有敌人在攻击范围内（必须是敌人：用direction来判断）
+        curr_square = self.get_vertex(card_loc)
+        card = self.get_vertex(card_loc).item
+        enemy = None  # it would be a card or subclass of card
+        for neighbour in curr_square.neighbours:
+            if neighbour.item is not None \
+                    and card_loc[0] < neighbour.location[0] <= card_loc[0] + card.range \
+                    and neighbour.item.direction != card.direction:
+                # Finding the closest enemy
+                if enemy is None or neighbour.location[0] < enemy.location[0]:
+                    enemy = neighbour.item
+        # Attack
+        if enemy is not None:
+            enemy.hp = enemy.hp - card.attack
+
+
+# Testing
+# from card import miniguner
+# map = Map()
+# map.__init__()
+#
+# soldier41 = miniguner((4, 1), 'right')
+# enemy61 = miniguner((6, 1), 'left')
+# square41 = map.get_vertex((4, 1))
+# square61 = map.get_vertex((6, 1))
+# square41.item = soldier41
+# square61.item = enemy61

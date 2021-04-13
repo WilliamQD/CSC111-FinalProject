@@ -65,10 +65,26 @@ image_autogun_square = pygame.transform.scale(image_autogun, (int(square_size[0]
 
 class card:
     """The attribute class of card.
+
+    Instance Attributes:
+        - images: The images for a card on visualization
+        - display_mode: A int representing which image will display on the screen
+        (Ex. attack image, defend image)
+        - location: A tuple represents location of the card on the map
+        - direction: A string represents that the way of a card
+        that how it move in the game (move toward left or right)
+
+    Preconditions:
+        - images != []
+        - 0 <= display_mode <=2
+        - 1 <= location[0] <= 10
+        - 1 <= location[1] <= 6
+        - direction in {'left', 'right'}
     """
     images: list[pygame.image]
     display_mode: int
     location: Optional[tuple]  # This is a location based on screen divided by square, which is 9*12
+    direction: str
 
     def __init__(self, images: list[pygame.image], location: Optional[tuple], direction: str = ''):
         """initialize the function
