@@ -1,4 +1,5 @@
 from __future__ import annotations
+from card import *
 from graph import Graph
 from typing import Any, Union
 
@@ -113,6 +114,15 @@ class Map(Graph):
         """
         curr_x = soldier_loc[0]
         curr_y = soldier_loc[1]
+        new_square = None
+
+        if self._vertices[soldier_loc].item.buffs['mobility'] is False:
+            self._vertices[soldier_loc].item.buffs['mobility'] = True
+            return
+
+        if self._vertices[soldier_loc].item.buffs['burn'] is True:
+            self._vertices[soldier_loc].item.hp = int(self._vertices[soldier_loc].item.hp
+                                                      * (1 - 0.1))
 
         if self._vertices[soldier_loc].item.direction == 'right':
             if 1 <= curr_x < 10 \
@@ -127,6 +137,7 @@ class Map(Graph):
                     self._vertices[soldier_loc].item.location = new_location
                     self._vertices[new_location].item, self._vertices[soldier_loc].item = \
                         self._vertices[soldier_loc].item, None
+                    new_square = self._vertices[new_location]
         else:
             if 1 < curr_x <= 10 \
                     and 1 <= curr_y <= 6:
@@ -136,6 +147,23 @@ class Map(Graph):
                     self._vertices[soldier_loc].item.location = new_location
                     self._vertices[new_location].item, self._vertices[soldier_loc].item = \
                         self._vertices[soldier_loc].item, None
+                    new_square = self._vertices[new_location]
+
+        if new_square.kind == 'volcano':
+            new_square.item.buffs = {'attack buff': 1.0, 'defend buff': 1.0,
+                                     'mobility': True, 'burn': True}
+        elif new_square.kind == 'forest':
+            new_square.item.buffs = {'attack buff': 1.25, 'defend buff': 1.0,
+                                     'mobility': True, 'burn': False}
+        elif new_square.kind == 'mountain':
+            new_square.item.buffs = {'attack buff': 1.0, 'defend buff': 0.75,
+                                     'mobility': True, 'burn': False}
+        elif new_square.kind == 'river':
+            new_square.item.buffs = {'attack buff': 1.0, 'defend buff': 1.0,
+                                     'mobility': False, 'burn': False}
+        else:
+            new_square.item.buffs = {'attack buff': 1.0, 'defend buff': 1.0,
+                                     'mobility': True, 'burn': False}
 
     def attack(self, card_loc: tuple) -> None:
         """Make the given card on that location attack if enemy is in his/her attack range.
@@ -143,18 +171,37 @@ class Map(Graph):
         # 判断是否有敌人在攻击范围内（必须是敌人：用direction来判断）
         curr_square = self.get_vertex(card_loc)
         card = self.get_vertex(card_loc).item
-        enemy = None  # it would be a card or subclass of card
-        for neighbour in curr_square.neighbours:
-            if neighbour.item is not None \
-                    and card_loc[0] < neighbour.location[0] <= card_loc[0] + card.range \
-                    and neighbour.item.direction != card.direction:
-                # Finding the closest enemy
-                if enemy is None or neighbour.location[0] < enemy.location[0]:
-                    enemy = neighbour.item
-        # Attack
-        if enemy is not None:
-            enemy.hp = enemy.hp - card.attack
+        target = None  # it would be a card or subclass of card
 
+        # Finding the lowest hp ally in range (only for doctor)
+        if type(card) is doctor:
+            for neighbour in curr_square.neighbours:
+                if neighbour.item is not None \
+                        and card_loc[0] - card.range <= neighbour.location[0] \
+                        <= card_loc[0] + card.range \
+                        and neighbour.item.direction == card.direction:
+                    # Finding the lowest hp percentage ally
+                    if target is None or \
+                            (neighbour.item.hp / neighbour.item.max_hp < target.hp / target.max_hp):
+                        target = neighbour.item
+        else:
+            for neighbour in curr_square.neighbours:
+                if neighbour.item is not None \
+                        and card_loc[0] < neighbour.location[0] <= card_loc[0] + card.range \
+                        and neighbour.item.direction != card.direction \
+                        and card.direction == 'right':
+                    # Finding the closest enemy
+                    if target is None or neighbour.location[0] < target.location[0]:
+                        target = neighbour.item
+                elif neighbour.item is not None \
+                        and card_loc[0] - card.range <= neighbour.location[0] < card_loc[0] \
+                        and neighbour.item.direction != card.direction \
+                        and card.direction == 'left':
+                    if target is None or neighbour.location[0] > target.location[0]:
+                        target = neighbour.item
+        # Attack
+        if target is not None:
+            card.attack(target)
 
 # Testing
 # from card import miniguner
