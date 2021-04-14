@@ -6,13 +6,11 @@ from typing import Any, Union
 
 class Square:
     """a vertex that describe the square.
-
     Instance Attributes:
         - item: A card or subclass of card stand on this square
         - kind: A string represents what kind of landform this square is
         - neighbours: The vertices (squares) that are adjacent to this vertex (square).
         - location: A tuple represents location of this square on the map
-
     Preconditions:
         - kind in {待输入}
         - self not in self.neighbours
@@ -27,9 +25,7 @@ class Square:
 
     def __init__(self, location: tuple, item: Any, kind: Union[None, str]) -> None:
         """Initialize a new vertex with the given item and kind.
-
         This vertex is initialized with no neighbours.
-
         Preconditions:
             - kind in {待输入}
         """
@@ -42,7 +38,6 @@ class Square:
 class Map(Graph):
     """a graph that describe the map.
     The map is 6 * 10
-
     Instance attributes:
         - A collection of the squares contained in this map.
         Maps item to Square object.
@@ -70,7 +65,6 @@ class Map(Graph):
     # 此函数为自定义，功能为判定是否可以通过
     def is_passable(self, location1: Any, location2: Any) -> bool:
         """Return whether item1 and item2 are adjacent vertices in this graph.
-
         Return False if item1 or item2 do not appear as vertices in this graph.
         """
         if location1 in self._vertices and location2 in self._vertices:
@@ -82,7 +76,6 @@ class Map(Graph):
 
     def adjacent(self, location1: Any, location2: Any) -> bool:
         """Return whether item1 and item2 are adjacent vertices in this graph.
-
         Return False if item1 or item2 do not appear as vertices in this graph.
         """
         if location1 in self._vertices and location2 in self._vertices:
@@ -108,7 +101,6 @@ class Map(Graph):
 
     def make_move(self, soldier_loc: tuple) -> None:
         """Make the given soldier move.
-
         Precondition:
             - soldier.item is not None
         """
@@ -200,17 +192,5 @@ class Map(Graph):
                     if target is None or neighbour.location[0] > target.location[0]:
                         target = neighbour.item
         # Attack
-        if target is not None:
-            card.attack(target)
-
-# Testing
-# from card import miniguner
-# map = Map()
-# map.__init__()
-#
-# soldier41 = miniguner((4, 1), 'right')
-# enemy61 = miniguner((6, 1), 'left')
-# square41 = map.get_vertex((4, 1))
-# square61 = map.get_vertex((6, 1))
-# square41.item = soldier41
-# square61.item = enemy61
+        if target is not None and type(target) is not int:
+            card.make_attack(target)

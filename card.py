@@ -65,7 +65,6 @@ image_autogun_square = pygame.transform.scale(image_autogun, (int(square_size[0]
 
 class card:
     """The attribute class of card.
-
     Instance Attributes:
         - images: The images for a card on visualization
         - display_mode: A int representing which image will display on the screen
@@ -75,7 +74,6 @@ class card:
         - location: A tuple represents location of the card on the map
         - direction: A string represents that the way of a card
         that how it move in the game (move toward left or right)
-
     Preconditions:
         - images != []
         - 0 <= display_mode <=2
@@ -88,15 +86,18 @@ class card:
     buffs: dict[str, Any]
     location: Optional[tuple]  # This is a location based on screen divided by square, which is 9*12
     direction: str
+    value: int
 
-    def __init__(self, images: list[pygame.image], location: Optional[tuple], direction: str = ''):
+    def __init__(self, images: list[pygame.image], location: Optional[tuple], direction: str = '',
+                 value: int = 0):
         """initialize the function
         """
         self.images = images
-        self.display_mode = 0
+        self.display_mode = 2
         self.buffs = {'attack buff': 1.0, 'defend buff': 1.0, 'mobility': True, 'burn': False}
         self.direction = direction
         self.location = location
+        self.value = value
 
     def display_mode_refresh(self, new_mode: int):
         """Change the display mode by input.
@@ -135,7 +136,6 @@ class miniguner(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: str
     defend_system: str
@@ -146,12 +146,11 @@ class miniguner(card):
         """initialize the function.
         """
         super().__init__([image_miniguner, image_miniguner_card, image_miniguner_square],
-                         location, direction)
+                         location, direction, value=5)
         self.max_hp = 20
         self.hp = 20
         self.attack = 5
         self.weight = ...
-        self.value = 5
         self.location = location
         self.type = 'soldier'
         self.attack_system = 'light'
@@ -159,7 +158,7 @@ class miniguner(card):
         self.special = None
         self.range = 1
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
         """
@@ -167,7 +166,7 @@ class miniguner(card):
         if target.defend_system == self.attack_system:  # 轻打轻
             mult_pow = mult_pow * 1.5
 
-        target.hp = int(target.hp - self.attack * mult_pow)
+        target.hp -= int(self.attack * mult_pow)
 
 
 class charger(card):
@@ -177,7 +176,6 @@ class charger(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: str
     defend_system: str
@@ -188,19 +186,18 @@ class charger(card):
         """initialize the function.
         """
         super().__init__([image_charger, image_charger_card, image_charger_square],
-                         location, direction)
+                         location, direction, value=5)
         self.max_hp = 10
         self.hp = 10
         self.attack = 15
         self.weight = ...
-        self.value = 5
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'light'
         self.special = None
         self.range = 1
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
         """
@@ -218,7 +215,6 @@ class sniper(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: str
     defend_system: str
@@ -229,19 +225,18 @@ class sniper(card):
         """initialize the function.
         """
         super().__init__([image_sniper, image_sniper_card, image_sniper_square],
-                         location, direction)
+                         location, direction, value=7)
         self.max_hp = 5
         self.hp = 5
         self.attack = 20
         self.weight = ...
-        self.value = 7
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.defend_system = 'light'
         self.special = None
         self.range = 2
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
         """
@@ -261,7 +256,6 @@ class rocketer(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: str
     defend_system: str
@@ -272,19 +266,18 @@ class rocketer(card):
         """initialize the function.
         """
         super().__init__([image_rocketer, image_rocketer_card, image_rocketer_square],
-                         location, direction)
+                         location, direction, value=5)
         self.max_hp = 10
         self.hp = 10
         self.attack = 15
         self.weight = ...
-        self.value = 5
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.defend_system = 'heavy'
         self.special = None
         self.range = 2
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
         """
@@ -304,7 +297,6 @@ class doctor(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: Optional[str]  # 医生设定不会攻击
     defend_system: str
@@ -315,22 +307,20 @@ class doctor(card):
         """initialize the function.
         """
         super().__init__([image_doctor, image_doctor_card, image_doctor_square],
-                         location, direction)
+                         location, direction, value=5)
         self.max_hp = 10
         self.hp = 10
         self.attack = 8
         self.weight = ...
-        self.value = 5
         self.type = 'soldier'
         self.attack_system = None
         self.defend_system = 'light'
         self.special = None
         self.range = 1  # 以医生为半径画圆，别的都是直线
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
-
         NOTE: doctor's attack is not affected by any buff!!!
         """
         if target.hp + self.attack > target.max_hp:
@@ -346,31 +336,30 @@ class ninja(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: str
     defend_system: str
     special: Any
     range: int
+    first_attack: bool
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_ninja, image_ninja_card, image_ninja_square, location],
-                         location, direction)
+                         location, direction, value=7)
         self.max_hp = 10
         self.hp = 10
         self.attack = 10
         self.weight = ...
-        self.value = 7
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'light'
         self.special = None
         self.range = 1
-        self.buffs['first attack'] = True
+        self.first_attack = True
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
         """
@@ -378,9 +367,9 @@ class ninja(card):
         if target.defend_system == self.attack_system:  # 轻打轻
             mult_pow = mult_pow * 1.5
 
-        if self.buffs['first attack'] is True:  # Check whether it is first attack (only for ninja)
+        if self.first_attack is True:  # Check whether it is first attack (only for ninja)
             mult_pow = mult_pow * 2
-            self.buffs['first attack'] = False
+            self.first_attack = False
 
         target.hp = int(target.hp - self.attack * mult_pow)
 
@@ -390,17 +379,15 @@ class fireball(card):
     """
     attack: int
     weight: int
-    value: int
     type: str
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_fireball, image_fireball_card, image_fireball_square],
-                         location, direction)
+                         location, direction, value=10)
         self.attack = 10
         self.weight = ...
-        self.value = 10
         self.type = 'magic'
 
 
@@ -409,17 +396,15 @@ class lightening(card):
     """
     attack: int
     weight: int
-    value: int
     type: str
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_lightening, image_lightening_card, image_lightening_square],
-                         location, direction)
+                         location, direction, value=10)
         self.attack = 20
         self.weight = ...
-        self.value = 10
         self.type = 'magic'
 
 
@@ -430,19 +415,17 @@ class mine(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_mine, image_mine_card, image_mine_square],
-                         location, direction)
+                         location, direction, value=10)
         self.max_hp = 10
         self.hp = 10
-        self.attack = 5
+        self.attack = 0
         self.weight = ...
-        self.value = 10
         self.type = 'building'
 
 
@@ -453,26 +436,26 @@ class autogun(card):
     hp: int
     attack: int
     weight: int
-    value: int
     type: str
     attack_system: str
     defend_system: str
+    range: int
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_autogun, image_autogun_card, image_autogun_square],
-                         location, direction)
+                         location, direction, value=10)
         self.max_hp = 20
         self.hp = 20
         self.attack = 5
         self.weight = ...
-        self.value = 10
         self.type = 'building'
         self.attack_system = 'heavy'
         self.defend_system = 'heavy'
+        self.range = 2
 
-    def attack(self, target: Any) -> None:
+    def make_attack(self, target: Any) -> None:
         """Attacking the given target.
         The given target should be subclass of card.
         """

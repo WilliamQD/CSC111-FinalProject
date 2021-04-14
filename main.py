@@ -4,7 +4,7 @@ import random
 from pygame.colordict import THECOLORS
 from map_graph import Map, Square
 from typing import Any, Optional
-from card import miniguner, charger, sniper, rocketer, doctor, nijia, \
+from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, card
 
 pygame.init()  # 初始化pygame
@@ -161,7 +161,7 @@ def set_init_player_card_random() -> None:
         elif chosen == 5:
             player_card_group[key] = doctor(location)
         elif chosen == 6:
-            player_card_group[key] = nijia(location)
+            player_card_group[key] = ninja(location)
         elif chosen == 7:
             player_card_group[key] = fireball(location)
         elif chosen == 8:
@@ -194,21 +194,39 @@ def text_data_visualize(surface: pygame.Surface) -> None:
 def refresh_visual_image(c: card) -> None:
     """refresh visual image by input.
     """
-    global clicked_map, turn_end, clicked_card, decition_act
+    global clicked_map, turn_end, clicked_card, decition_act, selected_card, money
     if decition_act is True:
-        clicked_map = False
-        turn_end = True
-        clicked_card = False
+
         (x, y) = pygame.mouse.get_pos()
         local_x = int(x // square_size[0])
         local_y = int(y // square_size[1])
-        # 如果点击范围超出自己基地3格，放入无效且不会返还金币！
-        # 除非是法术，否则如果放置位置item != None，放入无效且不会返还金币！
-        situation_1 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 4
-        situation_2 = square_size[1] <= pygame.mouse.get_pos()[1] <= square_size[1] * 7
-        situation_3 = game_map_graph.get_vertex((local_x, local_y)).item is None
-        situation_4 = type(c) is fireball or type(c) is lightening
-        if situation_1 and situation_2 and (situation_3 or situation_4):
+
+        situation_1 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 4  # 放在基地前三格
+        situation_2 = square_size[1] <= pygame.mouse.get_pos()[1] <= square_size[1] * 7  # 放在图内
+        situation_3 = game_map_graph.get_vertex((local_x, local_y)).item is None  # 放在已经有士兵
+        situation_4 = type(c) is fireball or type(c) is lightening  # 法术的特殊情况
+        situation_5 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11  # 放在图内
+
+        print(situation_4, situation_1, situation_2)
+
+        if situation_4 is False and situation_1 is False and situation_2 is True:
+            print('You put the card out of range! Reput the card')
+            decition_act = False
+            clicked_map = False
+            return None
+
+        if situation_4 is False and situation_3 is False:
+            print('You put the card on a square which already have one. Reput the card')
+            money += c.value
+            decition_act = False
+            clicked_map = False
+            return None
+
+        clicked_map = False
+        turn_end = True
+        clicked_card = False
+
+        if situation_1 and situation_2 and situation_3 and not situation_4:
             if type(c) is miniguner:
                 game_map_graph.get_vertex((local_x, local_y)).item = miniguner((local_x, local_y),
                                                                                'right')
@@ -224,8 +242,8 @@ def refresh_visual_image(c: card) -> None:
             elif type(c) is doctor:
                 game_map_graph.get_vertex((local_x, local_y)).item = doctor((local_x, local_y),
                                                                             'right')
-            elif type(c) is nijia:
-                game_map_graph.get_vertex((local_x, local_y)).item = nijia((local_x, local_y),
+            elif type(c) is ninja:
+                game_map_graph.get_vertex((local_x, local_y)).item = ninja((local_x, local_y),
                                                                            'right')
             elif type(c) is mine:
                 game_map_graph.get_vertex((local_x, local_y)).item = mine((local_x, local_y),
@@ -233,14 +251,21 @@ def refresh_visual_image(c: card) -> None:
             elif type(c) is autogun:
                 game_map_graph.get_vertex((local_x, local_y)).item = autogun((local_x, local_y),
                                                                              'right')
-            elif type(c) is fireball:
+            remove_from_player_group(player_card_group, c.location[0] // 2 + 1)
+            game_map_graph.get_vertex((local_x, local_y)).item.get_real_location()
+
+        elif situation_4 and situation_5:
+            if type(c) is fireball:
                 magic_map_graph.get_vertex((local_x, local_y)).item = fireball((local_x, local_y),
                                                                                'right')
             elif type(c) is lightening:
                 magic_map_graph.get_vertex((local_x, local_y)).item = lightening((local_x, local_y),
                                                                                  'right')
             remove_from_player_group(player_card_group, c.location[0] // 2 + 1)
-            game_map_graph.get_vertex((local_x, local_y)).item.get_real_location()
+
+        all_magic_explode()
+        clear_all_dead_body()
+        selected_card = None
     decition_act = False
 
 
@@ -274,7 +299,7 @@ def add_card_to_player_group_random() -> None:
             elif chosen == 5:
                 player_card_group[key] = doctor(location)
             elif chosen == 6:
-                player_card_group[key] = nijia(location)
+                player_card_group[key] = ninja(location)
             elif chosen == 7:
                 player_card_group[key] = fireball(location)
             elif chosen == 8:
@@ -333,7 +358,8 @@ def make_all_card_attack() -> None:
     global enemy_hp
     for x in range(1, 11):
         for y in range(1, 7):
-            if game_map_graph.get_vertex((x, y)).item is not None:
+            if game_map_graph.get_vertex((x, y)).item is not None \
+                    and type(game_map_graph.get_vertex((x, y)).item) is not mine:
                 mark2 = game_map_graph.get_vertex((x, y)).item
                 if x != 10:
                     game_map_graph.attack(mark2.location)
@@ -347,7 +373,7 @@ def all_magic_explode() -> None:
     for x in range(1, 11):
         for y in range(1, 7):
             if type(magic_map_graph.get_vertex((x, y)).item) == fireball:
-                magic = game_map_graph.get_vertex((x, y)).item
+                magic = magic_map_graph.get_vertex((x, y)).item
                 loc = magic.location
                 if loc[0] != 1:
                     loc1 = (loc[0] - 1, loc[1])
@@ -366,21 +392,58 @@ def all_magic_explode() -> None:
                 else:
                     loc4 = None
 
-
+                if loc is not None:
+                    if game_map_graph.get_vertex(loc).item is not None:
+                        game_map_graph.get_vertex(loc).item.hp -= magic.attack
+                if loc1 is not None:
+                    if game_map_graph.get_vertex(loc1).item is not None:
+                        game_map_graph.get_vertex(loc1).item.hp -= magic.attack
+                if loc2 is not None:
+                    if game_map_graph.get_vertex(loc2).item is not None:
+                        game_map_graph.get_vertex(loc2).item.hp -= magic.attack
+                if loc3 is not None:
+                    if game_map_graph.get_vertex(loc3).item is not None:
+                        game_map_graph.get_vertex(loc3).item.hp -= magic.attack
+                if loc4 is not None:
+                    if game_map_graph.get_vertex(loc4).item is not None:
+                        game_map_graph.get_vertex(loc4).item.hp -= magic.attack
+                magic_map_graph.get_vertex((x, y)).item = None
 
             elif type(magic_map_graph.get_vertex((x, y)).item) == lightening:
-                magic = game_map_graph.get_vertex((x, y)).item
+                magic = magic_map_graph.get_vertex((x, y)).item
                 loc = magic.location
-                if game_map_graph.get_vertex(loc) is None:
-                    pass
-                else:
+                if game_map_graph.get_vertex(loc).item is not None:
                     game_map_graph.get_vertex(loc).item.hp -= magic.attack
-                game_map_graph.get_vertex((x, y)).item = None
+                magic_map_graph.get_vertex((x, y)).item = None
 
 
 def test_emery_move_working() -> None:
     game_map_graph.get_vertex((8, 2)).item = miniguner((8, 2), 'left')
     game_map_graph.get_vertex((7, 3)).item = autogun((7, 3), 'left')
+
+
+def clear_all_dead_body() -> None:
+    """delete whose hp <= 0
+    """
+    for x in range(1, 11):
+        for y in range(1, 7):
+            if game_map_graph.get_vertex((x, y)).item is not None:
+                mark2 = game_map_graph.get_vertex((x, y)).item
+                if mark2.hp <= 0:
+                    game_map_graph.get_vertex((x, y)).item = None
+
+
+def win_or_lose() -> Optional[bool]:
+    """The situation of which side win.
+    """
+    if my_hp <= 0 and enemy_hp > 0:
+        return False
+    elif enemy_hp <= 0 and my_hp > 0:
+        return True
+    elif enemy_hp <= 0 and my_hp <= 0:
+        return my_hp >= enemy_hp
+    else:
+        return None
 
 
 ###############################################
@@ -402,12 +465,13 @@ def card_click(event: pygame.event.Event) -> Optional[card]:
     mouse_x = event.pos[0]
     square_x = (mouse_x // square_size[0]) // 2 + 1
     mark = player_card_group[int(square_x)]
-    if money < mark.value:
-        print('You have not enough money!')
-        return None
-    else:
-        money = money - mark.value
-        return mark
+    if selected_card is None:
+        if money < mark.value:
+            print('You have not enough money!')
+            return None
+        else:
+            money = money - mark.value
+            return mark
 
 
 ################################################################
@@ -420,6 +484,17 @@ while True:  # 游戏主进程
         money_increase()
         make_all_soldier_move(turn_end)
         make_all_card_attack()
+        clear_all_dead_body()
+        if win_or_lose() is True:
+            draw_text(screen, 'YOU WIN', (width // 3, height // 2), text_size=110)
+            pygame.display.flip()
+            pygame.time.wait(5000)
+            sys.exit()
+        elif win_or_lose() is False:
+            draw_text(screen, 'YOU LOSE', (width // 3, height // 2), text_size=110)
+            pygame.display.flip()
+            pygame.time.wait(5000)
+            sys.exit()
         turn_end = False
     for event in pygame.event.get():  # 获取事件
         if event.type == pygame.QUIT:  # 如果点击退出（右上角X）
