@@ -6,6 +6,7 @@ from map_graph import Map, Square
 from typing import Any, Optional
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, card
+from minimax import Minimax_tree
 
 pygame.init()  # 初始化pygame
 size = (640, 480)  # 设置窗口
@@ -25,6 +26,8 @@ decition_act = False  # 是否算回合
 turn_end = False  # 回合结束
 marked_square = None  # 点击到的地图
 selected_card = None  # 点击到的卡片
+
+ai = Minimax_tree()  # 初始化敌方ai
 
 game_map_graph = Map()  # 设置地图
 game_map_graph.__init__()  # 初始化6*10地图与连接
@@ -206,8 +209,6 @@ def refresh_visual_image(c: card) -> None:
         situation_3 = game_map_graph.get_vertex((local_x, local_y)).item is None  # 放在已经有士兵
         situation_4 = type(c) is fireball or type(c) is lightening  # 法术的特殊情况
         situation_5 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11  # 放在图内
-
-        print(situation_4, situation_1, situation_2)
 
         if situation_4 is False and situation_1 is False and situation_2 is True:
             print('You put the card out of range! Reput the card')
@@ -475,11 +476,27 @@ def card_click(event: pygame.event.Event) -> Optional[card]:
 
 
 ################################################################
+# part5: ai operation
+################################################################
+def ai_action() -> None:
+    """The function which ai make its action
+    """
+    global game_map_graph, ai
+    ai.get_map(game_map_graph)
+    c = ai.action_randomly()
+    if type(c) is fireball or type(c) is lightening:
+        magic_map_graph.get_vertex(c.location).item = c
+    else:
+        game_map_graph.get_vertex(c.location).item = c
+
+
+################################################################
 # part4: main game process
 ################################################################
 while True:  # 游戏主进程
     clock.tick(60)  # 每秒执行60次
     if turn_end is True:
+        ai_action()
         term += 1
         money_increase()
         make_all_soldier_move(turn_end)
