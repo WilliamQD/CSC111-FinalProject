@@ -5,10 +5,10 @@ from map_graph import Map
 from typing import Any, Optional
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, card
-
+import sys
 
 class Minimax_tree:
-    """The decition tree which ai will use.
+    """The decision tree which ai will use.
     """
     decition_mode: int  # 0: 使用士兵， 1： 使用法术， 2： 使用建筑， 3： 单纯随机
     subtree: list[Minimax_tree]
@@ -19,13 +19,20 @@ class Minimax_tree:
     player_score: float
 
     def __init__(self):
-       self.decition_mode = 3
+        self.decition_mode = 3
 
     def get_map(self, m: Map) -> None:
         self.situation = m
 
     def score_calculate(self):
-        ...
+        """calculate the current score of the game based on how many units left for one side and
+        how many healths left
+
+        A score of negative means Player2 is winning, a score of positive means Player1 is winning.
+        """
+        map = self.situation
+        Player1_health = map.get_vertex((0, 0))# need change
+        Player2_
 
     def make_decition_mode(self):
         ...
@@ -81,9 +88,26 @@ class Minimax_tree:
     def action_randomly(self) -> card:
         return random.choice(self.get_all_possible_action())
 
-    def action_by_minimax(self, depth: int = 1):
-        if self.subtree is None:
-            return None
-        for x in self.subtree:
-            x.action_by_minimax(depth=depth - 1)
+    def action_by_minimax(self, is_maxplayer_turn: bool, depth: int = 1):
+        value = self.min_max(is_maxplayer_turn, depth)
+        for subtree in self.subtree:
+            # If the subtree has the given score of value, then return that action in that subtree
+            pass
+        return None
 
+    def min_max(self, is_maxplayer_turn: bool, depth: int) -> int:
+        if self.subtree is None:
+            self.decition_mode = 3
+            return score_calculate(self)
+        if False: # if game is over
+            return score_calculate(self)
+        if is_maxplayer_turn:
+            for subtree in self.subtree:
+                maxnum = -sys.maxsize - 1
+                eva = subtree.min_max(False, depth=depth - 1)
+                return max(maxnum, eva)
+        else:
+            for subtree in self.subtree:
+                minnum = sys.maxsize
+                eva = subtree.min_max(True, depth=depth - 1)
+                return min(minnum, eva)
