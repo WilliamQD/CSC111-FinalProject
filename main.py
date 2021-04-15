@@ -16,7 +16,7 @@ color = THECOLORS['white']  # 设置颜色
 speed = [5, 5]  # 设置移速（x， y）
 clock = pygame.time.Clock()  # 设置时钟
 term = 1  # 当前回合数
-money = 100  # 金钱
+money = 50  # 金钱
 my_hp = 100  # 我方hp
 enemy_hp = 100  # 敌方hp
 
@@ -26,6 +26,7 @@ decition_act = False  # 是否算回合
 turn_end = False  # 回合结束
 marked_square = None  # 点击到的地图
 selected_card = None  # 点击到的卡片
+attention1 = False  # False够钱买， True不够钱买并且自动跳入下一回合
 
 ai = Minimax_tree()  # 初始化敌方ai
 
@@ -119,13 +120,13 @@ def enclose_selected_card(c: Optional[card], is_display: bool = True) -> None:
             line_group['enclosed_card_4'] = [(loc[0] + 2 * square_size[0], loc[1]),
                                              (loc[0] + 2 * square_size[0],
                                               loc[1] + 2 * square_size[1])]
-        else:
-            if 'enclosed_card_1' in line_group and 'enclosed_card_2' in line_group \
-                    and 'enclosed_card_3' in line_group and 'enclosed_card_4' in line_group:
-                line_group.pop('enclosed_card_1')
-                line_group.pop('enclosed_card_2')
-                line_group.pop('enclosed_card_3')
-                line_group.pop('enclosed_card_4')
+    else:
+        if 'enclosed_card_1' in line_group and 'enclosed_card_2' in line_group \
+                and 'enclosed_card_3' in line_group and 'enclosed_card_4' in line_group:
+            line_group.pop('enclosed_card_1')
+            line_group.pop('enclosed_card_2')
+            line_group.pop('enclosed_card_3')
+            line_group.pop('enclosed_card_4')
 
 
 def draw_cards_in_map() -> None:
@@ -320,9 +321,11 @@ def money_increase() -> None:
         for y in range(1, 7):
             if game_map_graph.get_vertex((x, y)).item is not None:
                 mark = game_map_graph.get_vertex((x, y)).item
-                if type(mark) is mine:
+                if type(mark) is mine and mark.direction == 'right':
                     acc += 1
+    print(money)
     money += acc * 10
+    print(money)
 
 
 def make_all_soldier_move(is_movable: bool = False) -> None:
@@ -356,16 +359,18 @@ def make_all_soldier_move(is_movable: bool = False) -> None:
 def make_all_card_attack() -> None:
     """Make all card on screen attack.
     """
-    global enemy_hp
+    global enemy_hp, my_hp
     for x in range(1, 11):
         for y in range(1, 7):
             if game_map_graph.get_vertex((x, y)).item is not None \
                     and type(game_map_graph.get_vertex((x, y)).item) is not mine:
                 mark2 = game_map_graph.get_vertex((x, y)).item
-                if x != 10:
+                if x != 10 and x != 1:
                     game_map_graph.attack(mark2.location)
-                else:
+                elif x == 10 and mark2.direction == 'right':
                     enemy_hp = enemy_hp - mark2.attack
+                elif x == 1 and mark2.direction == 'left':
+                    my_hp = my_hp - mark2.attack
 
 
 def all_magic_explode() -> None:
@@ -462,16 +467,19 @@ def graph_click(m: Map, event: pygame.event.Event) -> Square:
 def card_click(event: pygame.event.Event) -> Optional[card]:
     """Return which card is clicked.
     """
-    global money
+    global money, attention1, clicked_card
     mouse_x = event.pos[0]
     square_x = (mouse_x // square_size[0]) // 2 + 1
     mark = player_card_group[int(square_x)]
     if selected_card is None:
         if money < mark.value:
-            print('You have not enough money!')
+            print('You have not enough money! Auto go to next round')
+            attention1 = True
+            clicked_card = False
             return None
         else:
             money = money - mark.value
+            clicked_card = True
             return mark
 
 
@@ -493,6 +501,7 @@ def ai_action() -> None:
 ################################################################
 # part4: main game process
 ################################################################
+
 while True:  # 游戏主进程
     clock.tick(60)  # 每秒执行60次
     if turn_end is True:
@@ -528,7 +537,6 @@ while True:  # 游戏主进程
             elif square_size[1] * 7 < pygame.mouse.get_pos()[1]:
                 if card_click(event) is not None:
                     selected_card = card_click(event)
-                    clicked_card = True
                     enclose_selected_card(selected_card, clicked_card)
     screen.fill(color)  # 填充颜色
     add_card_to_player_group_random()
@@ -537,7 +545,10 @@ while True:  # 游戏主进程
     if selected_card is not None:
         refresh_visual_image(selected_card)
         add_card_to_player_group_random()
-        enclose_selected_card(selected_card, clicked_card)
+    enclose_selected_card(selected_card, is_display=clicked_card)
+    if attention1 is True:
+        turn_end = True
+        attention1 = False
     draw_all_image()
     draw_cards_in_map()
     draw_bone_map(screen)
