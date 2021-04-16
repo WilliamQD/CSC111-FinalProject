@@ -1,53 +1,57 @@
-import pygame
+"""This Python module contains the whole game created by pygame.
+"""
+
 import sys
 import random
-from pygame.colordict import THECOLORS
-from map_graph import Map, Square
 from typing import Optional
+import pygame
+from pygame.colordict import THECOLORS
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, Card
 from minimax import Minimax_tree
+from map_graph import Map, Square
 
 pygame.init()  # initialize pygame
-size = (640, 480)  # set the window size
-screen = pygame.display.set_mode(size)  # set up the screen
-color = THECOLORS['white']  # set up the color
+SIZE = (640, 480)  # set the window size
+SCREEN = pygame.display.set_mode(SIZE)  # set up the screen
+COLOR = THECOLORS['white']  # set up the color
 
-clock = pygame.time.Clock()  # set up the clock to show when the game is end.
-term = 1  # The number of turn
-money = 500  # The money of player
-my_hp = 100  # The hp of player's basement
-enemy_hp = 100  # The hp of player
+CLOCK = pygame.time.Clock()  # set up the clock to show when the game is end.
+TERM = 1  # The number of turn
+MONEY = 500  # The money of player
+MY_HP = 100  # The hp of player's basement
+ENEMY_HP = 100  # The hp of player
 
-clicked_map = False  # is the map clicked?
-clicked_card = False  # is the card clicked?
-decition_act = False  # is the action begin?
-turn_end = False  # is the turn end?
-marked_square = None  # the square which the card player clicked.
-selected_card = None  # the card which the player clicked
-attention1 = False  # Attention that show if the player's money is enough to buy the selected card.
+CLICKED_MAP = False  # is the map clicked?
+CLICKED_CARD = False  # is the card clicked?
+DECISION_ACT = False  # is the action begin?
+TURN_END = False  # is the turn end?
+MARKED_SQUARE = None  # the square which the card player clicked.
+SELECTED_CARD = None  # the card which the player clicked
+ATTENTION1 = False  # Attention that show if the player's money is enough to buy the selected card.
 
-ai = Minimax_tree([])  # Initialize minimax algorithm
+AI = Minimax_tree([])  # Initialize minimax algorithm
 
-game_map_graph = Map()  # set up a map which the game will use
-game_map_graph.__init__()  # initialize the game_map_graph. More information go to map_graph.py
+GAME_MAP_GRAPH = Map()  # set up a map which the game will use
+GAME_MAP_GRAPH.__init__()  # initialize the game_map_graph. More information go to map_graph.py
 
-magic_map_graph = Map()  # set up a map which the magic will use
-magic_map_graph.__init__()  # initialize the magic_map_graph. More information go to map_graph.py
+MAGIC_MAP_GRAPH = Map()  # set up a map which the magic will use
+MAGIC_MAP_GRAPH.__init__()  # initialize the magic_map_graph. More information go to map_graph.py
 
-width, height = screen.get_size()  # get the screen size
-square_size = (width / 12, height / 9)  # get a square size.
+WIDTH, HEIGHT = SCREEN.get_size()  # get the screen size
+SQUARE_SIZE = (WIDTH / 12, HEIGHT / 9)  # get a square size.
 
-line_group = {}  # a group to control the show of deletable line.
-card_group = {}  # a group to control the show of deletable card on map.
-player_card_group = {}  # a group to control the cards player have
-color_group = {}  # a group to control the line color.
-text_group = {}  # same as color group.
+LINE_GROUP = {}  # a group to control the show of deletable line.
+CARD_GROUP = {}  # a group to control the show of deletable card on map.
+PLAYER_CARD_GROUP = {}  # a group to control the cards player have
+COLOR_GROUP = {}  # a group to control the line color.
+TEXT_GROUP = {}  # same as color group.
 
 # 加载地图图片
-image_background = pygame.image.load('Resources/background2.png')  # 加载背景图片（自制地图）
-image_background_suitable = pygame.transform.scale(image_background, (int(square_size[0] * 10),
-                                                                      int(square_size[1] * 6)))
+IMAGE_BACKGROUND = pygame.image.load('Resources/background2.png')  # 加载背景图片（自制地图）
+IMAGE_BACKGROUND_SUITABLE = pygame.transform.scale(IMAGE_BACKGROUND, (int(SQUARE_SIZE[0] * 10),
+                                                                      int(SQUARE_SIZE[1] * 6)))
+
 
 ####################################################
 # part1: draw text, line, image
@@ -65,81 +69,84 @@ def draw_text(surface: pygame.Surface, text: str, pos: tuple[int, int],
 
 
 def draw_all_image() -> None:
-    """draw the cards both in player_card_group and card_group.
+    """Draw the cards of both players (PLAYER_CARD_GROUP and card_group).
     """
-    screen.blit(image_background_suitable, square_size)
-    for x in player_card_group:
-        if player_card_group[x] is not None:
-            location = player_card_group[x].get_real_location()
-            screen.blit(player_card_group[x].images[player_card_group[x].display_mode], location)
-            draw_text(screen, str(player_card_group[x].value),
-                      (location[0], location[1] + square_size[1] * 1.7))
+    SCREEN.blit(IMAGE_BACKGROUND_SUITABLE, SQUARE_SIZE)
+    for x in PLAYER_CARD_GROUP:
+        if PLAYER_CARD_GROUP[x] is not None:
+            location = PLAYER_CARD_GROUP[x].get_real_location()
+            SCREEN.blit(PLAYER_CARD_GROUP[x].images[PLAYER_CARD_GROUP[x].display_mode], location)
+            draw_text(SCREEN, str(PLAYER_CARD_GROUP[x].value),
+                      (location[0], location[1] + SQUARE_SIZE[1] * 1.7))
 
 
 def draw_bone_map(surface: pygame.Surface) -> None:
-    """draw the bone map with line.
+    """Draw the bone map with line (drawing a map).
     The map is in size of 6(+3) * 10(+2)
     """
     line_color = THECOLORS['grey']
     border_color = THECOLORS['black']
     for i in range(1, 8):
-        if i == 1 or i == 7:
+        if i in {1, 7}:
             pygame.draw.line(surface, border_color,
-                             (0, square_size[1] * i), (width, square_size[1] * i))
+                             (0, SQUARE_SIZE[1] * i), (WIDTH, SQUARE_SIZE[1] * i))
         else:
-            pygame.draw.line(surface, line_color, (square_size[0], square_size[1] * i),
-                             (width - square_size[0], square_size[1] * i))
+            pygame.draw.line(surface, line_color, (SQUARE_SIZE[0], SQUARE_SIZE[1] * i),
+                             (WIDTH - SQUARE_SIZE[0], SQUARE_SIZE[1] * i))
 
     for i in range(1, 12):
-        pygame.draw.line(surface, line_color, (square_size[0] * i, square_size[1]),
-                         (square_size[0] * i, square_size[1] * 7))
+        pygame.draw.line(surface, line_color, (SQUARE_SIZE[0] * i, SQUARE_SIZE[1]),
+                         (SQUARE_SIZE[0] * i, SQUARE_SIZE[1] * 7))
 
 
 def draw_all_visual_line() -> None:
-    """draw all line in line group.
+    """Draw all line in line_group.
+    These lines in line_group will make up a box director
+    which occur when player selected his/her card in the store.
     """
-    for x in line_group:
-        pygame.draw.line(screen, color_group[x], line_group[x][0], line_group[x][1])
+    for x in LINE_GROUP:
+        pygame.draw.line(SCREEN, COLOR_GROUP[x], LINE_GROUP[x][0], LINE_GROUP[x][1])
 
 
 def enclose_selected_card(c: Optional[Card], is_display: bool = True) -> None:
-    """set enclosed card.
+    """Set enclosed card, the card had been selected in store,
+    and it will be enclosed by the box director created by draw_all_visual_line function.
     """
     if c is not None:
         loc = c.get_real_location()
-        color_group['enclosed_card_1'] = THECOLORS['blue']
-        color_group['enclosed_card_2'] = THECOLORS['blue']
-        color_group['enclosed_card_3'] = THECOLORS['blue']
-        color_group['enclosed_card_4'] = THECOLORS['blue']
+        COLOR_GROUP['enclosed_card_1'] = THECOLORS['blue']
+        COLOR_GROUP['enclosed_card_2'] = THECOLORS['blue']
+        COLOR_GROUP['enclosed_card_3'] = THECOLORS['blue']
+        COLOR_GROUP['enclosed_card_4'] = THECOLORS['blue']
         if is_display is True:
-            line_group['enclosed_card_1'] = [loc, (loc[0] + 2 * square_size[0], loc[1])]
-            line_group['enclosed_card_2'] = [loc, (loc[0], loc[1] + 2 * square_size[1])]
-            line_group['enclosed_card_3'] = [(loc[0], loc[1] + 2 * square_size[1]),
-                                             (loc[0] + 2 * square_size[0],
-                                              loc[1] + 2 * square_size[1])]
-            line_group['enclosed_card_4'] = [(loc[0] + 2 * square_size[0], loc[1]),
-                                             (loc[0] + 2 * square_size[0],
-                                              loc[1] + 2 * square_size[1])]
+            LINE_GROUP['enclosed_card_1'] = [loc, (loc[0] + 2 * SQUARE_SIZE[0], loc[1])]
+            LINE_GROUP['enclosed_card_2'] = [loc, (loc[0], loc[1] + 2 * SQUARE_SIZE[1])]
+            LINE_GROUP['enclosed_card_3'] = [(loc[0], loc[1] + 2 * SQUARE_SIZE[1]),
+                                             (loc[0] + 2 * SQUARE_SIZE[0],
+                                              loc[1] + 2 * SQUARE_SIZE[1])]
+            LINE_GROUP['enclosed_card_4'] = [(loc[0] + 2 * SQUARE_SIZE[0], loc[1]),
+                                             (loc[0] + 2 * SQUARE_SIZE[0],
+                                              loc[1] + 2 * SQUARE_SIZE[1])]
     else:
-        if 'enclosed_card_1' in line_group and 'enclosed_card_2' in line_group \
-                and 'enclosed_card_3' in line_group and 'enclosed_card_4' in line_group:
-            line_group.pop('enclosed_card_1')
-            line_group.pop('enclosed_card_2')
-            line_group.pop('enclosed_card_3')
-            line_group.pop('enclosed_card_4')
+        if 'enclosed_card_1' in LINE_GROUP and 'enclosed_card_2' in LINE_GROUP \
+                and 'enclosed_card_3' in LINE_GROUP and 'enclosed_card_4' in LINE_GROUP:
+            LINE_GROUP.pop('enclosed_card_1')
+            LINE_GROUP.pop('enclosed_card_2')
+            LINE_GROUP.pop('enclosed_card_3')
+            LINE_GROUP.pop('enclosed_card_4')
 
 
 def draw_cards_in_map() -> None:
-    """draw all item in map
+    """Draw all item in map.
     """
     for x in range(1, 11):
         for y in range(1, 7):
-            if game_map_graph.get_vertex((x, y)).item is not None:
-                marked_card = game_map_graph.get_vertex((x, y)).item
+            if GAME_MAP_GRAPH.get_vertex((x, y)).item is not None:
+                marked_card = GAME_MAP_GRAPH.get_vertex((x, y)).item
                 loc = marked_card.get_real_location()
-                screen.blit(marked_card.images[marked_card.display_mode], loc)
-                draw_text(screen, marked_card.direction + ' ' + str(marked_card.hp),
-                          (loc[0] + square_size[0] * 0.1, loc[1] + 0.8 * square_size[1]),
+                SCREEN.blit(marked_card.images[marked_card.display_mode], loc)
+                draw_text(SCREEN, marked_card.direction + ' ' + str(marked_card.hp),
+                          (loc[0] + SQUARE_SIZE[0] * 0.1, loc[1] + 0.8 * SQUARE_SIZE[1]),
                           text_size=15)
 
 
@@ -147,7 +154,7 @@ def draw_cards_in_map() -> None:
 # part1.1: set initialize data
 ####################################################
 def set_init_player_card_random() -> None:
-    """setup the card group randomly.
+    """Setup the card group randomly.
     """
     for key in range(1, 7):
         possible_choices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -155,25 +162,25 @@ def set_init_player_card_random() -> None:
         chosen = random.choice(possible_choices)
         location = ((key - 1) * 2, 7.1)
         if chosen == 1:
-            player_card_group[key] = miniguner(location)
+            PLAYER_CARD_GROUP[key] = miniguner(location)
         elif chosen == 2:
-            player_card_group[key] = charger(location)
+            PLAYER_CARD_GROUP[key] = charger(location)
         elif chosen == 3:
-            player_card_group[key] = sniper(location)
+            PLAYER_CARD_GROUP[key] = sniper(location)
         elif chosen == 4:
-            player_card_group[key] = rocketer(location)
+            PLAYER_CARD_GROUP[key] = rocketer(location)
         elif chosen == 5:
-            player_card_group[key] = doctor(location)
+            PLAYER_CARD_GROUP[key] = doctor(location)
         elif chosen == 6:
-            player_card_group[key] = ninja(location)
+            PLAYER_CARD_GROUP[key] = ninja(location)
         elif chosen == 7:
-            player_card_group[key] = fireball(location)
+            PLAYER_CARD_GROUP[key] = fireball(location)
         elif chosen == 8:
-            player_card_group[key] = lightening(location)
+            PLAYER_CARD_GROUP[key] = lightening(location)
         elif chosen == 9:
-            player_card_group[key] = mine(location)
+            PLAYER_CARD_GROUP[key] = mine(location)
         elif chosen == 10:
-            player_card_group[key] = autogun(location)
+            PLAYER_CARD_GROUP[key] = autogun(location)
 
 
 set_init_player_card_random()
@@ -183,95 +190,96 @@ set_init_player_card_random()
 # part2: refresh and visualize surface, groups.
 ####################################################
 def text_data_visualize(surface: pygame.Surface) -> None:
-    """draw the text on the screen
+    """Draw the text, such as the direction of the cards,
+    the hp of the cards, and the hp of basements on the screen.
     """
-    draw_text(surface, 'Round ' + str(term), (width // 2, 0))  # display round
+    draw_text(surface, 'Round ' + str(TERM), (WIDTH // 2, 0))  # display round
     # display if the player can make action
-    draw_text(surface, 'Your Turn', (int(width - 1.5 * square_size[0]), int(square_size[1] // 2)))
-    draw_text(surface, 'Money: ' + str(money), (0, int(square_size[1] // 2)))  # display the money
+    draw_text(surface, 'Your Turn', (int(WIDTH - 1.5 * SQUARE_SIZE[0]), int(SQUARE_SIZE[1] // 2)))
+    draw_text(surface, 'Money: ' + str(MONEY), (0, int(SQUARE_SIZE[1] // 2)))  # display the money
     # display hp of player's basement
-    draw_text(surface, 'HP: ' + str(my_hp), (0, int(square_size[1] * 5.5)), text_size=20)
-    draw_text(surface, 'Hp: ' + str(enemy_hp),
-              (int(square_size[0] * 11), int(square_size[1] * 5.5)), text_size=20)  # display hp
+    draw_text(surface, 'HP: ' + str(MY_HP), (0, int(SQUARE_SIZE[1] * 5.5)), text_size=20)
+    draw_text(surface, 'Hp: ' + str(ENEMY_HP),
+              (int(SQUARE_SIZE[0] * 11), int(SQUARE_SIZE[1] * 5.5)), text_size=20)  # display hp
 
 
 def refresh_visual_image(c: Card) -> None:
-    """refresh visual image by input.
+    """Refresh visual image by input.
     """
-    global clicked_map, turn_end, clicked_card, decition_act, selected_card, money
-    if decition_act is True:
+    global CLICKED_MAP, TURN_END, CLICKED_CARD, DECISION_ACT, SELECTED_CARD, MONEY
+    if DECISION_ACT is True:
 
         (x, y) = pygame.mouse.get_pos()
-        local_x = int(x // square_size[0])
-        local_y = int(y // square_size[1])
+        local_x = int(x // SQUARE_SIZE[0])
+        local_y = int(y // SQUARE_SIZE[1])
         # is put in 3 square in front of basement on map on x?
-        situation_1 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 4
+        situation_1 = SQUARE_SIZE[0] < pygame.mouse.get_pos()[0] < SQUARE_SIZE[0] * 4
         # is it put in the game_map_graph on y?
-        situation_2 = square_size[1] <= pygame.mouse.get_pos()[1] <= square_size[1] * 7
+        situation_2 = SQUARE_SIZE[1] <= pygame.mouse.get_pos()[1] <= SQUARE_SIZE[1] * 7
         # is the selected_square empty?
-        situation_3 = game_map_graph.get_vertex((local_x, local_y)).item is None
+        situation_3 = GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item is None
         # is selected_card a magic?
-        situation_4 = type(c) is fireball or type(c) is lightening
+        situation_4 = type(c) == fireball or type(c) == lightening
         #
-        situation_5 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11
+        situation_5 = SQUARE_SIZE[0] < pygame.mouse.get_pos()[0] < SQUARE_SIZE[0] * 11
 
         if situation_4 is False and situation_1 is False and situation_2 is True:
             print('You put the card out of range! Reput the card')
-            decition_act = False
-            clicked_map = False
+            DECISION_ACT = False
+            CLICKED_MAP = False
             return None
 
         if situation_4 is False and situation_3 is False:
             print('You put the card on a square which already have one. Reput the card')
-            decition_act = False
-            clicked_map = False
+            DECISION_ACT = False
+            CLICKED_MAP = False
             return None
 
-        clicked_map = False
-        turn_end = True
-        clicked_card = False
+        CLICKED_MAP = False
+        TURN_END = True
+        CLICKED_CARD = False
 
         if situation_1 and situation_2 and situation_3 and not situation_4:
-            if type(c) is miniguner:
-                game_map_graph.get_vertex((local_x, local_y)).item = miniguner((local_x, local_y),
+            if type(c) == miniguner:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = miniguner((local_x, local_y),
                                                                                'right')
-            elif type(c) is charger:
-                game_map_graph.get_vertex((local_x, local_y)).item = charger((local_x, local_y),
+            elif type(c) == charger:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = charger((local_x, local_y),
                                                                              'right')
-            elif type(c) is sniper:
-                game_map_graph.get_vertex((local_x, local_y)).item = sniper((local_x, local_y),
+            elif type(c) == sniper:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = sniper((local_x, local_y),
                                                                             'right')
-            elif type(c) is rocketer:
-                game_map_graph.get_vertex((local_x, local_y)).item = rocketer((local_x, local_y),
+            elif type(c) == rocketer:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = rocketer((local_x, local_y),
                                                                               'right')
-            elif type(c) is doctor:
-                game_map_graph.get_vertex((local_x, local_y)).item = doctor((local_x, local_y),
+            elif type(c) == doctor:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = doctor((local_x, local_y),
                                                                             'right')
-            elif type(c) is ninja:
-                game_map_graph.get_vertex((local_x, local_y)).item = ninja((local_x, local_y),
+            elif type(c) == ninja:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = ninja((local_x, local_y),
                                                                            'right')
-            elif type(c) is mine:
-                game_map_graph.get_vertex((local_x, local_y)).item = mine((local_x, local_y),
+            elif type(c) == mine:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = mine((local_x, local_y),
                                                                           'right')
-            elif type(c) is autogun:
-                game_map_graph.get_vertex((local_x, local_y)).item = autogun((local_x, local_y),
+            elif type(c) == autogun:
+                GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = autogun((local_x, local_y),
                                                                              'right')
-            remove_from_player_group(player_card_group, c.location[0] // 2 + 1)
-            game_map_graph.get_vertex((local_x, local_y)).item.get_real_location()
+            remove_from_player_group(PLAYER_CARD_GROUP, c.location[0] // 2 + 1)
+            GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item.get_real_location()
 
         elif situation_4 and situation_5:
             if type(c) is fireball:
-                magic_map_graph.get_vertex((local_x, local_y)).item = fireball((local_x, local_y),
+                MAGIC_MAP_GRAPH.get_vertex((local_x, local_y)).item = fireball((local_x, local_y),
                                                                                'right')
             elif type(c) is lightening:
-                magic_map_graph.get_vertex((local_x, local_y)).item = lightening((local_x, local_y),
+                MAGIC_MAP_GRAPH.get_vertex((local_x, local_y)).item = lightening((local_x, local_y),
                                                                                  'right')
-            remove_from_player_group(player_card_group, c.location[0] // 2 + 1)
+            remove_from_player_group(PLAYER_CARD_GROUP, c.location[0] // 2 + 1)
 
         all_magic_explode()
         clear_all_dead_body()
-        selected_card = None
-    decition_act = False
+        SELECTED_CARD = None
+    DECISION_ACT = False
 
 
 ###############################################
@@ -285,95 +293,98 @@ def remove_from_player_group(group: dict, key: int) -> None:
 
 
 def add_card_to_player_group_random() -> None:
-    """Add a card to a group.
+    """Add a card to PLAYER_CARD_GROUP.
     """
-    for key in player_card_group:
-        if player_card_group[key] == 'Hello world':
+    for key in PLAYER_CARD_GROUP:
+        if PLAYER_CARD_GROUP[key] == 'Hello world':
             possible_choices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
             chosen = random.choice(possible_choices)
             location = ((key - 1) * 2, 7.1)
             if chosen == 1:
-                player_card_group[key] = miniguner(location)
+                PLAYER_CARD_GROUP[key] = miniguner(location)
             elif chosen == 2:
-                player_card_group[key] = charger(location)
+                PLAYER_CARD_GROUP[key] = charger(location)
             elif chosen == 3:
-                player_card_group[key] = sniper(location)
+                PLAYER_CARD_GROUP[key] = sniper(location)
             elif chosen == 4:
-                player_card_group[key] = rocketer(location)
+                PLAYER_CARD_GROUP[key] = rocketer(location)
             elif chosen == 5:
-                player_card_group[key] = doctor(location)
+                PLAYER_CARD_GROUP[key] = doctor(location)
             elif chosen == 6:
-                player_card_group[key] = ninja(location)
+                PLAYER_CARD_GROUP[key] = ninja(location)
             elif chosen == 7:
-                player_card_group[key] = fireball(location)
+                PLAYER_CARD_GROUP[key] = fireball(location)
             elif chosen == 8:
-                player_card_group[key] = lightening(location)
+                PLAYER_CARD_GROUP[key] = lightening(location)
             elif chosen == 9:
-                player_card_group[key] = mine(location)
+                PLAYER_CARD_GROUP[key] = mine(location)
             elif chosen == 10:
-                player_card_group[key] = autogun(location)
+                PLAYER_CARD_GROUP[key] = autogun(location)
 
 
 def money_increase() -> None:
-    """Increase the money player have by numbers of mine
+    """Increase the money player have by the total numbers of mine.
     """
-    global money
+    global MONEY
     acc = 1
     for x in range(1, 11):
         for y in range(1, 7):
-            if game_map_graph.get_vertex((x, y)).item is not None:
-                mark = game_map_graph.get_vertex((x, y)).item
+            if GAME_MAP_GRAPH.get_vertex((x, y)).item is not None:
+                mark = GAME_MAP_GRAPH.get_vertex((x, y)).item
                 if type(mark) is mine and mark.direction == 'right':
                     acc += 1
-    print(money)
-    money += acc * 10
-    print(money)
+    print(MONEY)
+    MONEY += acc * 10
+    print(MONEY)
 
 
 def make_all_soldier_move(is_movable: bool = False) -> None:
-    """make all soldier move.
+    """Make all soldier on the map move.
+    NOTE: the soldier achieved the end of the row
+    (location[1] == 1 or location[1] == 6 depended on the direction of the card)
+    will not make move.
     """
     if is_movable is True:
         right_visited = []
         left_visited = []
         for x in range(1, 11):
             for y in range(1, 7):
-                if game_map_graph.get_vertex((11 - x, y)).item is not None \
+                if GAME_MAP_GRAPH.get_vertex((11 - x, y)).item is not None \
                         and (12 - x, y) not in right_visited \
-                        and game_map_graph.get_vertex((11 - x, y)).item.direction == 'right' \
-                        and game_map_graph.get_vertex((11 - x, y)).item.type == 'soldier' \
+                        and GAME_MAP_GRAPH.get_vertex((11 - x, y)).item.direction == 'right' \
+                        and GAME_MAP_GRAPH.get_vertex((11 - x, y)).item.type == 'soldier' \
                         and x != 1 \
-                        and game_map_graph.get_vertex((12 - x, y)).item is None:
-                    marked_card = game_map_graph.get_vertex((11 - x, y)).item
-                    game_map_graph.make_move(marked_card.location)
+                        and GAME_MAP_GRAPH.get_vertex((12 - x, y)).item is None:
+                    marked_card = GAME_MAP_GRAPH.get_vertex((11 - x, y)).item
+                    GAME_MAP_GRAPH.make_move(marked_card.location)
                     right_visited.append((12 - x, y))
-                elif game_map_graph.get_vertex((x, y)).item is not None \
+                elif GAME_MAP_GRAPH.get_vertex((x, y)).item is not None \
                         and (x - 1, y) not in left_visited \
-                        and game_map_graph.get_vertex((x, y)).item.direction != 'right' \
-                        and game_map_graph.get_vertex((x, y)).item.type == 'soldier' \
+                        and GAME_MAP_GRAPH.get_vertex((x, y)).item.direction != 'right' \
+                        and GAME_MAP_GRAPH.get_vertex((x, y)).item.type == 'soldier' \
                         and x != 1 \
-                        and game_map_graph.get_vertex((x - 1, y)).item is None:
-                    marked_card = game_map_graph.get_vertex((x, y)).item
-                    game_map_graph.make_move(marked_card.location)
+                        and GAME_MAP_GRAPH.get_vertex((x - 1, y)).item is None:
+                    marked_card = GAME_MAP_GRAPH.get_vertex((x, y)).item
+                    GAME_MAP_GRAPH.make_move(marked_card.location)
                     left_visited.append((x - 1, y))
 
 
 def make_all_card_attack() -> None:
     """Make all card on screen attack.
     """
-    global enemy_hp, my_hp
+    global ENEMY_HP, MY_HP
     for x in range(1, 11):
         for y in range(1, 7):
-            if game_map_graph.get_vertex((x, y)).item is not None \
-                    and type(game_map_graph.get_vertex((x, y)).item) is not mine:
-                mark2 = game_map_graph.get_vertex((x, y)).item
-                if x != 10 and x != 1:
-                    game_map_graph.attack(mark2.location)
+            if GAME_MAP_GRAPH.get_vertex((x, y)).item is not None \
+                    and type(GAME_MAP_GRAPH.get_vertex((x, y)).item) is not mine:
+                mark2 = GAME_MAP_GRAPH.get_vertex((x, y)).item
+                if x not in {10, 1}:
+                    GAME_MAP_GRAPH.attack(mark2.location)
                 elif x == 10 and mark2.direction == 'right':
-                    enemy_hp = enemy_hp - mark2.attack
+                    ENEMY_HP = ENEMY_HP - mark2.attack
                 elif x == 1 and mark2.direction == 'left':
-                    my_hp = my_hp - mark2.attack
+                    MY_HP = MY_HP - mark2.attack
 
 
 def all_magic_explode() -> None:
@@ -381,8 +392,8 @@ def all_magic_explode() -> None:
     """
     for x in range(1, 11):
         for y in range(1, 7):
-            if type(magic_map_graph.get_vertex((x, y)).item) == fireball:
-                magic = magic_map_graph.get_vertex((x, y)).item
+            if type(MAGIC_MAP_GRAPH.get_vertex((x, y)).item) == fireball:
+                magic = MAGIC_MAP_GRAPH.get_vertex((x, y)).item
                 loc = magic.location
                 if loc[0] != 1:
                     loc1 = (loc[0] - 1, loc[1])
@@ -402,55 +413,58 @@ def all_magic_explode() -> None:
                     loc4 = None
 
                 if loc is not None:
-                    if game_map_graph.get_vertex(loc).item is not None:
-                        game_map_graph.get_vertex(loc).item.hp -= magic.attack
+                    if GAME_MAP_GRAPH.get_vertex(loc).item is not None:
+                        GAME_MAP_GRAPH.get_vertex(loc).item.hp -= magic.attack
                 if loc1 is not None:
-                    if game_map_graph.get_vertex(loc1).item is not None:
-                        game_map_graph.get_vertex(loc1).item.hp -= magic.attack
+                    if GAME_MAP_GRAPH.get_vertex(loc1).item is not None:
+                        GAME_MAP_GRAPH.get_vertex(loc1).item.hp -= magic.attack
                 if loc2 is not None:
-                    if game_map_graph.get_vertex(loc2).item is not None:
-                        game_map_graph.get_vertex(loc2).item.hp -= magic.attack
+                    if GAME_MAP_GRAPH.get_vertex(loc2).item is not None:
+                        GAME_MAP_GRAPH.get_vertex(loc2).item.hp -= magic.attack
                 if loc3 is not None:
-                    if game_map_graph.get_vertex(loc3).item is not None:
-                        game_map_graph.get_vertex(loc3).item.hp -= magic.attack
+                    if GAME_MAP_GRAPH.get_vertex(loc3).item is not None:
+                        GAME_MAP_GRAPH.get_vertex(loc3).item.hp -= magic.attack
                 if loc4 is not None:
-                    if game_map_graph.get_vertex(loc4).item is not None:
-                        game_map_graph.get_vertex(loc4).item.hp -= magic.attack
-                magic_map_graph.get_vertex((x, y)).item = None
+                    if GAME_MAP_GRAPH.get_vertex(loc4).item is not None:
+                        GAME_MAP_GRAPH.get_vertex(loc4).item.hp -= magic.attack
+                MAGIC_MAP_GRAPH.get_vertex((x, y)).item = None
 
-            elif type(magic_map_graph.get_vertex((x, y)).item) == lightening:
-                magic = magic_map_graph.get_vertex((x, y)).item
+            elif type(MAGIC_MAP_GRAPH.get_vertex((x, y)).item) == lightening:
+                magic = MAGIC_MAP_GRAPH.get_vertex((x, y)).item
                 loc = magic.location
-                if game_map_graph.get_vertex(loc).item is not None:
-                    game_map_graph.get_vertex(loc).item.hp -= magic.attack
-                magic_map_graph.get_vertex((x, y)).item = None
+                if GAME_MAP_GRAPH.get_vertex(loc).item is not None:
+                    GAME_MAP_GRAPH.get_vertex(loc).item.hp -= magic.attack
+                MAGIC_MAP_GRAPH.get_vertex((x, y)).item = None
 
 
-def test_emery_move_working() -> None:
-    game_map_graph.get_vertex((8, 2)).item = miniguner((8, 2), 'left')
-    game_map_graph.get_vertex((7, 3)).item = autogun((7, 3), 'left')
+# def test_every_move_working() -> None:
+#     """Testing
+#     """
+#     GAME_MAP_GRAPH.get_vertex((8, 2)).item = miniguner((8, 2), 'left')
+#     GAME_MAP_GRAPH.get_vertex((7, 3)).item = autogun((7, 3), 'left')
 
 
 def clear_all_dead_body() -> None:
-    """delete whose hp <= 0
+    """Delete all cards which have hp <= 0
     """
     for x in range(1, 11):
         for y in range(1, 7):
-            if game_map_graph.get_vertex((x, y)).item is not None:
-                mark2 = game_map_graph.get_vertex((x, y)).item
+            if GAME_MAP_GRAPH.get_vertex((x, y)).item is not None:
+                mark2 = GAME_MAP_GRAPH.get_vertex((x, y)).item
                 if mark2.hp <= 0:
-                    game_map_graph.get_vertex((x, y)).item = None
+                    GAME_MAP_GRAPH.get_vertex((x, y)).item = None
 
 
 def win_or_lose() -> Optional[bool]:
-    """The situation of which side win.
+    """Return True if player win, and return False if enemy win.
+    Otherwise, return None.
     """
-    if my_hp <= 0 and enemy_hp > 0:
+    if MY_HP <= 0 < ENEMY_HP:
         return False
-    elif enemy_hp <= 0 and my_hp > 0:
+    elif ENEMY_HP <= 0 < MY_HP:
         return True
-    elif enemy_hp <= 0 and my_hp <= 0:
-        return my_hp >= enemy_hp
+    elif ENEMY_HP <= 0 and MY_HP <= 0:
+        return MY_HP >= ENEMY_HP
     else:
         return None
 
@@ -462,101 +476,129 @@ def graph_click(m: Map, event: pygame.event.Event) -> Square:
     """Return which square the player clicked.
     """
     (x, y) = event.pos
-    new_x = x // square_size[0]
-    new_y = y // square_size[0]
+    new_x = x // SQUARE_SIZE[0]
+    new_y = y // SQUARE_SIZE[0]
     return m.get_vertex((new_x, new_y))
 
 
 def card_click(event: pygame.event.Event) -> Optional[Card]:
     """Return which card is clicked.
     """
-    global money, attention1, clicked_card
+    global MONEY, ATTENTION1, CLICKED_CARD
     mouse_x = event.pos[0]
-    square_x = (mouse_x // square_size[0]) // 2 + 1
-    mark = player_card_group[int(square_x)]
-    if selected_card is None:
-        if money < mark.value:
+    square_x = (mouse_x // SQUARE_SIZE[0]) // 2 + 1
+    mark = PLAYER_CARD_GROUP[int(square_x)]
+    if SELECTED_CARD is None:
+        if MONEY < mark.value:
             print('You have not enough money! Auto go to next round')
-            attention1 = True
-            clicked_card = False
+            ATTENTION1 = True
+            CLICKED_CARD = False
             return None
-        elif money >= mark.value:
-            money = money - mark.value
-            clicked_card = True
+        elif MONEY >= mark.value:
+            MONEY = MONEY - mark.value
+            CLICKED_CARD = True
             return mark
 
 
 ################################################################
 # part5: ai operation
 ################################################################
-def ai_action() -> None:
+def ai_action(difficulty: int = 1) -> None:
     """The function which ai make its action
+
+    Difficulty is an integer between 1 and 5, inclusive, the higher the difficulty, the less
+    -random the AI acts, which means it is more likely to make good choices following the AI
+    min-max algorithm (a difficulty of 5 means it completely follows the AI algorithm, whereas
+    1 means it acts completely random).
     """
-    global game_map_graph, ai
-    ai.get_map(game_map_graph.self_copy())
-    c = ai.action_by_minimax(True, 1)
+    if difficulty == 1:
+        random_scale = 1
+    elif difficulty == 2:
+        random_scale = 0.75
+    elif difficulty == 3:
+        random_scale = 0.5
+    elif difficulty == 4:
+        random_scale = 0.25
+    else:
+        random_scale = 0
+
+    global GAME_MAP_GRAPH, AI
+    AI.get_map(GAME_MAP_GRAPH.self_copy())
+    if random.random() <= random_scale:
+        c = AI.action_randomly()
+    else:
+        # Change the depth of the minimax algorithm here, between 1 and 3 inclusive
+        # (advice on not choosing 3 since it takes very very long)
+        c = AI.action_by_minimax(True, 1)
     print(c, c.location)
     if type(c) is fireball or type(c) is lightening:
-        magic_map_graph.get_vertex(c.location).item = c
+        MAGIC_MAP_GRAPH.get_vertex(c.location).item = c
     else:
-        game_map_graph.get_vertex(c.location).item = c
-    ai = Minimax_tree([])
+        GAME_MAP_GRAPH.get_vertex(c.location).item = c
+    AI = Minimax_tree([])
 
 
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 100,
+        'disable': ['E9999', 'E1101', 'R0916', 'R1702', 'R0915', 'E9998'],
+        'extra-imports': ['pygame', 'sys', 'random', 'map_graph', 'typing', 'card', 'minimax']
+    })
 ################################################################
 # part4: main game process
 ################################################################
 
 while True:  # The main process of the game.
-    clock.tick(60)  # Run 60 times a second.
-    if turn_end is True:
+    CLOCK.tick(60)  # Run 60 times a second.
+    if TURN_END is True:
         ai_action()
-        term += 1
+        TERM += 1
         money_increase()
-        make_all_soldier_move(turn_end)
+        make_all_soldier_move(TURN_END)
         make_all_card_attack()
         clear_all_dead_body()
         if win_or_lose() is True:
-            draw_text(screen, 'YOU WIN', (width // 3, height // 2), text_size=110)
+            draw_text(SCREEN, 'YOU WIN', (WIDTH // 3, HEIGHT // 2), text_size=110)
             pygame.display.flip()
             pygame.time.wait(5000)
             sys.exit()
         elif win_or_lose() is False:
-            draw_text(screen, 'YOU LOSE', (width // 3, height // 2), text_size=110)
+            draw_text(SCREEN, 'YOU LOSE', (WIDTH // 3, HEIGHT // 2), text_size=110)
             pygame.display.flip()
             pygame.time.wait(5000)
             sys.exit()
-        turn_end = False
-    for event in pygame.event.get():  # get what happen
-        if event.type == pygame.QUIT:  # if exit is clicked
+        TURN_END = False
+    for curr_event in pygame.event.get():  # get what happen
+        if curr_event.type == pygame.QUIT:  # if exit is clicked
             sys.exit()  # system quit
-        elif event.type == pygame.MOUSEBUTTONDOWN:  # click the map
-            if square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11 \
-                    and square_size[1] < pygame.mouse.get_pos()[1] < square_size[1] * 7:
-                marked_square = graph_click(game_map_graph, event)
-                clicked_map = True
-                if clicked_card is True:
-                    decition_act = True
+        elif curr_event.type == pygame.MOUSEBUTTONDOWN:  # click the map
+            if SQUARE_SIZE[0] < pygame.mouse.get_pos()[0] < SQUARE_SIZE[0] * 11 \
+                    and SQUARE_SIZE[1] < pygame.mouse.get_pos()[1] < SQUARE_SIZE[1] * 7:
+                MARKED_SQUARE = graph_click(GAME_MAP_GRAPH, curr_event)
+                CLICKED_MAP = True
+                if CLICKED_CARD is True:
+                    DECISION_ACT = True
                 else:
-                    clicked_map = False
-            elif square_size[1] * 7 < pygame.mouse.get_pos()[1] and selected_card is None:
-                selected_card = card_click(event)
-                if selected_card is not None:
-                    enclose_selected_card(selected_card, clicked_card)
-    screen.fill(color)  # fill the screen with color
+                    CLICKED_MAP = False
+            elif SQUARE_SIZE[1] * 7 < pygame.mouse.get_pos()[1] and SELECTED_CARD is None:
+                SELECTED_CARD = card_click(curr_event)
+                if SELECTED_CARD is not None:
+                    enclose_selected_card(SELECTED_CARD, CLICKED_CARD)
+    SCREEN.fill(COLOR)  # fill the screen with color
     add_card_to_player_group_random()
     draw_all_visual_line()
-    text_data_visualize(screen)
-    if selected_card is not None:
-        refresh_visual_image(selected_card)
+    text_data_visualize(SCREEN)
+    if SELECTED_CARD is not None:
+        refresh_visual_image(SELECTED_CARD)
         add_card_to_player_group_random()
-    enclose_selected_card(selected_card, is_display=clicked_card)
-    if attention1 is True:
-        turn_end = True
-        attention1 = False
+    enclose_selected_card(SELECTED_CARD, is_display=CLICKED_CARD)
+    if ATTENTION1 is True:
+        TURN_END = True
+        ATTENTION1 = False
     draw_all_image()
     draw_cards_in_map()
-    draw_bone_map(screen)
+    draw_bone_map(SCREEN)
     draw_all_visual_line()
     pygame.display.flip()  # refresh the screen with new screen blit.
 
