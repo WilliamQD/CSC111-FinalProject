@@ -136,6 +136,7 @@ class Minimax_tree:
             # If the subtree has the given score of value, then return that action in that subtree
             if subtree.item[1] == value and subtree.item[0].location[1] == row_score:
                 return subtree.item[0]
+        return random.choice(self.get_all_possible_action())
 
     def min_max(self, is_ai_turn: bool, depth: int) -> float:
 
