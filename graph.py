@@ -1,3 +1,16 @@
+"""This Python module contains the original graph from class.
+
+Copyright and Usage Information
+===============================
+
+This program is provided solely for the personal and private use of teachers and TAs
+checking and grading the CSC111 project at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited.
+
+This file is Copyright (c) 2021 Alex Lin, Steven Liu, Haitao Zeng, William Zhang.
+"""
+
 from __future__ import annotations
 from typing import Any, Union
 

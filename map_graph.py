@@ -1,6 +1,16 @@
-from __future__ import annotations
+"""This Python module contains the map_graph class and its new vertex class square.
 
-import copy
+Copyright and Usage Information
+===============================
+
+This program is provided solely for the personal and private use of teachers and TAs
+checking and grading the CSC111 project at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited.
+
+This file is Copyright (c) 2021 Alex Lin, Steven Liu, Haitao Zeng, William Zhang.
+"""
+from __future__ import annotations
 
 from card import *
 from graph import Graph
@@ -38,9 +48,9 @@ class Square:
         self.neighbours = {}
         self.location = location
         if self.kind == 'volcano' or self.kind == 'river':
-            self.weight = 0.8 * self.location[0]
+            self.weight = 0.8 * (1.1 ** self.location[0])
         elif self.kind == 'forest' or self.kind == 'mountain':
-            self.weight = 1.2 * self.location[0]
+            self.weight = 1.2 * (1.1 ** self.location[0])
         else:
             self.weight = 1 * self.location[0]
 
