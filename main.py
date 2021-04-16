@@ -5,7 +5,7 @@ from pygame.colordict import THECOLORS
 from map_graph import Map, Square
 from typing import Any, Optional
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
-    fireball, lightening, mine, autogun, card
+    fireball, lightening, mine, autogun, Card
 from minimax import Minimax_tree
 
 pygame.init()  # initialize pygame
@@ -45,8 +45,9 @@ color_group = {}  # a group to control the line color.
 text_group = {}  # same as color group.
 
 # 加载地图图片
-image_background = ...  # 加载背景图片（自制地图）
-
+image_background = pygame.image.load('Resources/background.png')  # 加载背景图片（自制地图）
+image_background_suitable = pygame.transform.scale(image_background, (int(square_size[0] * 10),
+                                                                      int(square_size[1] * 6)))
 
 ####################################################
 # part1: draw text, line, image
@@ -66,6 +67,7 @@ def draw_text(surface: pygame.Surface, text: str, pos: tuple[int, int],
 def draw_all_image() -> None:
     """draw the cards both in player_card_group and card_group.
     """
+    screen.blit(image_background_suitable, square_size)
     for x in player_card_group:
         if player_card_group[x] is not None:
             location = player_card_group[x].get_real_location()
@@ -73,26 +75,6 @@ def draw_all_image() -> None:
             draw_text(screen, str(player_card_group[x].value),
                       (location[0], location[1] + square_size[1] * 1.7))
 
-
-def fill_color_by_map() -> None:
-    for x in range(1, 11):
-        for y in range(1, 7):
-            if game_map_graph.get_vertex((x, y)).kind == 'volcano':
-                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
-                                  square_size[1])
-                screen.fill(THECOLORS['red'], rec)
-            elif game_map_graph.get_vertex((x, y)).kind == 'forest':
-                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
-                                  square_size[1])
-                screen.fill(THECOLORS['green'], rec)
-            elif game_map_graph.get_vertex((x, y)).kind == 'mountain':
-                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
-                                  square_size[1])
-                screen.fill(THECOLORS['yellow'], rec)
-            elif game_map_graph.get_vertex((x, y)).kind == 'river':
-                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
-                                  square_size[1])
-                screen.fill(THECOLORS['blue'], rec)
 
 def draw_bone_map(surface: pygame.Surface) -> None:
     """draw the bone map with line.
@@ -120,7 +102,7 @@ def draw_all_visual_line() -> None:
         pygame.draw.line(screen, color_group[x], line_group[x][0], line_group[x][1])
 
 
-def enclose_selected_card(c: Optional[card], is_display: bool = True) -> None:
+def enclose_selected_card(c: Optional[Card], is_display: bool = True) -> None:
     """set enclosed card.
     """
     if c is not None:
@@ -213,7 +195,7 @@ def text_data_visualize(surface: pygame.Surface) -> None:
               (int(square_size[0] * 11), int(square_size[1] * 5.5)), text_size=20)  # display hp
 
 
-def refresh_visual_image(c: card) -> None:
+def refresh_visual_image(c: Card) -> None:
     """refresh visual image by input.
     """
     global clicked_map, turn_end, clicked_card, decition_act, selected_card, money
@@ -485,7 +467,7 @@ def graph_click(m: Map, event: pygame.event.Event) -> Square:
     return m.get_vertex((new_x, new_y))
 
 
-def card_click(event: pygame.event.Event) -> Optional[card]:
+def card_click(event: pygame.event.Event) -> Optional[Card]:
     """Return which card is clicked.
     """
     global money, attention1, clicked_card
