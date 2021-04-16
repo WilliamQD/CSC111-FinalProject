@@ -18,7 +18,7 @@ COLOR = THECOLORS['white']  # set up the color
 
 CLOCK = pygame.time.Clock()  # set up the clock to show when the game is end.
 TERM = 1  # The number of turn
-MONEY = 500  # The money of player
+MONEY = 100  # The money of player
 MY_HP = 100  # The hp of player's basement
 ENEMY_HP = 100  # The hp of player
 
@@ -219,7 +219,7 @@ def refresh_visual_image(c: Card) -> None:
         # is the selected_square empty?
         situation_3 = GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item is None
         # is selected_card a magic?
-        situation_4 = type(c) == fireball or type(c) == lightening
+        situation_4 = isinstance(c, (fireball, lightening))
         #
         situation_5 = SQUARE_SIZE[0] < pygame.mouse.get_pos()[0] < SQUARE_SIZE[0] * 11
 
@@ -240,38 +240,38 @@ def refresh_visual_image(c: Card) -> None:
         CLICKED_CARD = False
 
         if situation_1 and situation_2 and situation_3 and not situation_4:
-            if type(c) == miniguner:
+            if isinstance(c, miniguner):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = miniguner((local_x, local_y),
                                                                                'right')
-            elif type(c) == charger:
+            elif isinstance(c, charger):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = charger((local_x, local_y),
                                                                              'right')
-            elif type(c) == sniper:
+            elif isinstance(c, sniper):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = sniper((local_x, local_y),
                                                                             'right')
-            elif type(c) == rocketer:
+            elif isinstance(c, rocketer):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = rocketer((local_x, local_y),
                                                                               'right')
-            elif type(c) == doctor:
+            elif isinstance(c, doctor):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = doctor((local_x, local_y),
                                                                             'right')
-            elif type(c) == ninja:
+            elif isinstance(c, ninja):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = ninja((local_x, local_y),
                                                                            'right')
-            elif type(c) == mine:
+            elif isinstance(c, mine):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = mine((local_x, local_y),
                                                                           'right')
-            elif type(c) == autogun:
+            elif isinstance(c, autogun):
                 GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item = autogun((local_x, local_y),
                                                                              'right')
             remove_from_player_group(PLAYER_CARD_GROUP, c.location[0] // 2 + 1)
             GAME_MAP_GRAPH.get_vertex((local_x, local_y)).item.get_real_location()
 
         elif situation_4 and situation_5:
-            if type(c) is fireball:
+            if isinstance(c, fireball):
                 MAGIC_MAP_GRAPH.get_vertex((local_x, local_y)).item = fireball((local_x, local_y),
                                                                                'right')
-            elif type(c) is lightening:
+            elif isinstance(c, lightening):
                 MAGIC_MAP_GRAPH.get_vertex((local_x, local_y)).item = lightening((local_x, local_y),
                                                                                  'right')
             remove_from_player_group(PLAYER_CARD_GROUP, c.location[0] // 2 + 1)
@@ -332,11 +332,9 @@ def money_increase() -> None:
         for y in range(1, 7):
             if GAME_MAP_GRAPH.get_vertex((x, y)).item is not None:
                 mark = GAME_MAP_GRAPH.get_vertex((x, y)).item
-                if type(mark) is mine and mark.direction == 'right':
+                if isinstance(mark, mine) and mark.direction == 'right':
                     acc += 1
-    print(MONEY)
     MONEY += acc * 10
-    print(MONEY)
 
 
 def make_all_soldier_move(is_movable: bool = False) -> None:
@@ -377,7 +375,7 @@ def make_all_card_attack() -> None:
     for x in range(1, 11):
         for y in range(1, 7):
             if GAME_MAP_GRAPH.get_vertex((x, y)).item is not None \
-                    and type(GAME_MAP_GRAPH.get_vertex((x, y)).item) is not mine:
+                    and not isinstance(GAME_MAP_GRAPH.get_vertex((x, y)).item, mine):
                 mark2 = GAME_MAP_GRAPH.get_vertex((x, y)).item
                 if x not in {10, 1}:
                     GAME_MAP_GRAPH.attack(mark2.location)
@@ -392,7 +390,7 @@ def all_magic_explode() -> None:
     """
     for x in range(1, 11):
         for y in range(1, 7):
-            if type(MAGIC_MAP_GRAPH.get_vertex((x, y)).item) == fireball:
+            if isinstance(MAGIC_MAP_GRAPH.get_vertex((x, y)).item, fireball):
                 magic = MAGIC_MAP_GRAPH.get_vertex((x, y)).item
                 loc = magic.location
                 if loc[0] != 1:
@@ -429,7 +427,7 @@ def all_magic_explode() -> None:
                         GAME_MAP_GRAPH.get_vertex(loc4).item.hp -= magic.attack
                 MAGIC_MAP_GRAPH.get_vertex((x, y)).item = None
 
-            elif type(MAGIC_MAP_GRAPH.get_vertex((x, y)).item) == lightening:
+            elif isinstance(MAGIC_MAP_GRAPH.get_vertex((x, y)).item, lightening):
                 magic = MAGIC_MAP_GRAPH.get_vertex((x, y)).item
                 loc = magic.location
                 if GAME_MAP_GRAPH.get_vertex(loc).item is not None:
@@ -530,8 +528,7 @@ def ai_action(difficulty: int = 1) -> None:
         # Change the depth of the minimax algorithm here, between 1 and 3 inclusive
         # (advice on not choosing 3 since it takes very very long)
         c = AI.action_by_minimax(True, 1)
-    print(c, c.location)
-    if type(c) is fireball or type(c) is lightening:
+    if isinstance(c, (fireball, lightening)):
         MAGIC_MAP_GRAPH.get_vertex(c.location).item = c
     else:
         GAME_MAP_GRAPH.get_vertex(c.location).item = c
@@ -542,7 +539,8 @@ if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
         'max-line-length': 100,
-        'disable': ['E9999', 'E1101', 'R0916', 'R1702', 'R0915', 'E9998'],
+        'disable': ['E9999', 'E1101', 'R0916', 'R1702', 'R0915',
+                    'E9998', 'E1136', 'E9997', 'R1710'],
         'extra-imports': ['pygame', 'sys', 'random', 'map_graph', 'typing', 'card', 'minimax']
     })
 ################################################################
