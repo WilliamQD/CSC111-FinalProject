@@ -62,6 +62,13 @@ class Map(Graph):
                 if y != 6:
                     self.add_edge((x, y), (x, y + 1))
 
+    def self_copy(self) -> Map:
+        """return self copy.
+        """
+        copy_map = Map()
+        copy_map._vertices = self._vertices
+        return copy_map
+
     # 此函数为自定义，功能为判定是否可以通过
     def is_passable(self, location1: Any, location2: Any) -> bool:
         """Return whether item1 and item2 are adjacent vertices in this graph.

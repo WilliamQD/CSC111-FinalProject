@@ -28,7 +28,7 @@ marked_square = None  # 点击到的地图
 selected_card = None  # 点击到的卡片
 attention1 = False  # False够钱买， True不够钱买并且自动跳入下一回合
 
-ai = Minimax_tree()  # 初始化敌方ai
+ai = Minimax_tree([])  # 初始化敌方ai
 
 game_map_graph = Map()  # 设置地图
 game_map_graph.__init__()  # 初始化6*10地图与连接
@@ -219,7 +219,6 @@ def refresh_visual_image(c: card) -> None:
 
         if situation_4 is False and situation_3 is False:
             print('You put the card on a square which already have one. Reput the card')
-            money += c.value
             decition_act = False
             clicked_map = False
             return None
@@ -477,7 +476,7 @@ def card_click(event: pygame.event.Event) -> Optional[card]:
             attention1 = True
             clicked_card = False
             return None
-        else:
+        elif money >= mark.value:
             money = money - mark.value
             clicked_card = True
             return mark
@@ -490,8 +489,9 @@ def ai_action() -> None:
     """The function which ai make its action
     """
     global game_map_graph, ai
-    ai.get_map(game_map_graph)
-    c = ai.action_randomly()
+    ai.get_map(game_map_graph.self_copy())
+    c = ai.action_by_minimax(is_ai_turn=True, depth=1)
+    print(c, c.attack)
     if type(c) is fireball or type(c) is lightening:
         magic_map_graph.get_vertex(c.location).item = c
     else:
