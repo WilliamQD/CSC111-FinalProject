@@ -18,7 +18,7 @@ class Minimax_tree:
     ai_score: float
     player_score: float
 
-    def __init__(self, item: List[card]):
+    def __init__(self, item: List[Any]):
         self.decition_mode = 3
         self.item = item
 
@@ -51,10 +51,10 @@ class Minimax_tree:
 
         # Create a new subtree branch with the item being the new card
         # and the score of the new map
-        new_subtree = Minimax_tree([move])
+        new_subtree = Minimax_tree([])
         new_subtree.get_map(new_situation)
         curr_score = new_subtree.score_calculate()
-        new_subtree.item = new_subtree.item + [curr_score]
+        new_subtree.item = [move, curr_score]
         self.subtree.append(new_subtree)
 
     def get_all_possible_action(self) -> list[card]:
