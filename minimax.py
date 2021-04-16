@@ -10,18 +10,14 @@ from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
 class Minimax_tree:
     """The decision tree which ai will use.
     """
-    decition_mode: int  # 0: 使用士兵， 1： 使用法术， 2： 使用建筑， 3： 单纯随机
     subtree: list[Minimax_tree]
-    item: List  # 存放单个决策步骤[card, score]
-    situation: Map  # 存放实际情况的地图
-    memory: Any  # 存放预测结果
+    item: List  # stored what it have.
+    situation: Map  # store actual map.
+    memory: Any  # store the decition ai make.
     ai_score: float
     player_score: float
 
-
-
     def __init__(self, item: List[Any]):
-        self.decition_mode = 3
         self.item = item
         self.subtree = []
 
@@ -57,6 +53,7 @@ class Minimax_tree:
                     elif self.situation.get_vertex((x, y)).item.direction == 'left':
                         ai_score += self.situation.get_vertex((x, y)).item.weight
             result.append(player_score - ai_score)
+
         highest = max(result)
         return result.index(highest) + 1
 
@@ -69,7 +66,6 @@ class Minimax_tree:
             copy_map = self.situation.self_copy()
             copy_map.get_vertex(move.location).item = move
             new_situation = copy_map
-            copy_map.get_vertex(move.location).item = None
 
         # Create a new subtree branch with the item being the new card
         # and the score of the new map
@@ -78,6 +74,8 @@ class Minimax_tree:
         curr_score = new_subtree.score_calculate()
         new_subtree.item = [move, curr_score]
         self.subtree.append(new_subtree)
+        print(self.situation.get_vertex(move.location).item == move)  # False -> True
+        print(new_subtree.situation.get_vertex(move.location).item != move)  # False
 
     def get_all_possible_action(self) -> list[card]:
         result = []
@@ -128,18 +126,20 @@ class Minimax_tree:
         return random.choice(self.get_all_possible_action())
 
     def action_by_minimax(self, is_ai_turn: bool, depth: int = 1):
-
+        print(self.score_calculate())
         value = self.min_max(is_ai_turn, depth)
+        print(333, self.score_calculate())
         row_score = self.highest_row_score_calculate()
-        print(row_score)
         for subtree in self.subtree:
             # If the subtree has the given score of value, then return that action in that subtree
             if subtree.item[1] == value and subtree.item[0].location[1] == row_score:
                 return subtree.item[0]
+        return random.choice(self.get_all_possible_action())
 
     def min_max(self, is_ai_turn: bool, depth: int) -> float:
 
         if depth == 0:
+            print(self.score_calculate(), self.item[0], self.item[1])
             return self.score_calculate()
         # is_ai_turn should be true when the depth is odd, ex: 1, 3, 5
         if is_ai_turn:

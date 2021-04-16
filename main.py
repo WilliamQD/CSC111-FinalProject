@@ -8,42 +8,41 @@ from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, card
 from minimax import Minimax_tree
 
-pygame.init()  # 初始化pygame
-size = (640, 480)  # 设置窗口
-screen = pygame.display.set_mode(size)  # 显示窗口
-color = THECOLORS['white']  # 设置颜色
+pygame.init()  # initialize pygame
+size = (640, 480)  # set the window size
+screen = pygame.display.set_mode(size)  # set up the screen
+color = THECOLORS['white']  # set up the color
 
-speed = [5, 5]  # 设置移速（x， y）
-clock = pygame.time.Clock()  # 设置时钟
-term = 1  # 当前回合数
-money = 500  # 金钱
-my_hp = 100  # 我方hp
-enemy_hp = 100  # 敌方hp
+clock = pygame.time.Clock()  # set up the clock to show when the game is end.
+term = 1  # The number of turn
+money = 500  # The money of player
+my_hp = 100  # The hp of player's basement
+enemy_hp = 100  # The hp of player
 
-clicked_map = False  # 是否点击到图
-clicked_card = False  # 是否点击卡片
-decition_act = False  # 是否算回合
-turn_end = False  # 回合结束
-marked_square = None  # 点击到的地图
-selected_card = None  # 点击到的卡片
-attention1 = False  # False够钱买， True不够钱买并且自动跳入下一回合
+clicked_map = False  # is the map clicked?
+clicked_card = False  # is the card clicked?
+decition_act = False  # is the action begin?
+turn_end = False  # is the turn end?
+marked_square = None  # the square which the card player clicked.
+selected_card = None  # the card which the player clicked
+attention1 = False  # Attention that show if the player's money is enough to buy the selected card.
 
-ai = Minimax_tree([])  # 初始化敌方ai
+ai = Minimax_tree([])  # Initialize minimax algorithm
 
-game_map_graph = Map()  # 设置地图
-game_map_graph.__init__()  # 初始化6*10地图与连接
+game_map_graph = Map()  # set up a map which the game will use
+game_map_graph.__init__()  # initialize the game_map_graph. More information go to map_graph.py
 
-magic_map_graph = Map()  # 设置魔法地图
-magic_map_graph.__init__()  # 初始化6*10地图与连接
+magic_map_graph = Map()  # set up a map which the magic will use
+magic_map_graph.__init__()  # initialize the magic_map_graph. More information go to map_graph.py
 
-width, height = screen.get_size()  # 获取屏幕大小
-square_size = (width / 12, height / 9)  # 获取单个方块大小
+width, height = screen.get_size()  # get the screen size
+square_size = (width / 12, height / 9)  # get a square size.
 
-line_group = {}  # 管理划线的字典 key为组名，value为线的list
-card_group = {}  # 管理场上士兵的字典 key为location
-player_card_group = {}  # 管理玩家手上的牌 key为数字，value为card
-color_group = {}  # 管理场上线条颜色，key与其类型相对应
-text_group = {}  # same as color group
+line_group = {}  # a group to control the show of deletable line.
+card_group = {}  # a group to control the show of deletable card on map.
+player_card_group = {}  # a group to control the cards player have
+color_group = {}  # a group to control the line color.
+text_group = {}  # same as color group.
 
 # 加载地图图片
 image_background = ...  # 加载背景图片（自制地图）
@@ -55,7 +54,6 @@ image_background = ...  # 加载背景图片（自制地图）
 def draw_text(surface: pygame.Surface, text: str, pos: tuple[int, int],
               text_size: int = 22) -> None:
     """Draw the given text to the pygame screen at the given position.
-
     pos represents the *upper-left corner* of the text.
     """
     font = pygame.font.SysFont('inconsolata', text_size)
@@ -75,6 +73,26 @@ def draw_all_image() -> None:
             draw_text(screen, str(player_card_group[x].value),
                       (location[0], location[1] + square_size[1] * 1.7))
 
+
+def fill_color_by_map() -> None:
+    for x in range(1, 11):
+        for y in range(1, 7):
+            if game_map_graph.get_vertex((x, y)).kind == 'volcano':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['red'], rec)
+            elif game_map_graph.get_vertex((x, y)).kind == 'forest':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['green'], rec)
+            elif game_map_graph.get_vertex((x, y)).kind == 'mountain':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['yellow'], rec)
+            elif game_map_graph.get_vertex((x, y)).kind == 'river':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['blue'], rec)
 
 def draw_bone_map(surface: pygame.Surface) -> None:
     """draw the bone map with line.
@@ -185,14 +203,14 @@ set_init_player_card_random()
 def text_data_visualize(surface: pygame.Surface) -> None:
     """draw the text on the screen
     """
-    draw_text(surface, 'Round ' + str(term), (width // 2, 0))  # 显示当前回合
-    # 显示当前是否玩家行动回合
+    draw_text(surface, 'Round ' + str(term), (width // 2, 0))  # display round
+    # display if the player can make action
     draw_text(surface, 'Your Turn', (int(width - 1.5 * square_size[0]), int(square_size[1] // 2)))
-    draw_text(surface, 'Money: ' + str(money), (0, int(square_size[1] // 2)))  # 显示金钱
-    # 显示我方基地hp
+    draw_text(surface, 'Money: ' + str(money), (0, int(square_size[1] // 2)))  # display the money
+    # display hp of player's basement
     draw_text(surface, 'HP: ' + str(my_hp), (0, int(square_size[1] * 5.5)), text_size=20)
     draw_text(surface, 'Hp: ' + str(enemy_hp),
-              (int(square_size[0] * 11), int(square_size[1] * 5.5)), text_size=20)  # 显示敌方基地hp
+              (int(square_size[0] * 11), int(square_size[1] * 5.5)), text_size=20)  # display hp
 
 
 def refresh_visual_image(c: card) -> None:
@@ -204,12 +222,16 @@ def refresh_visual_image(c: card) -> None:
         (x, y) = pygame.mouse.get_pos()
         local_x = int(x // square_size[0])
         local_y = int(y // square_size[1])
-
-        situation_1 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 4  # 放在基地前三格
-        situation_2 = square_size[1] <= pygame.mouse.get_pos()[1] <= square_size[1] * 7  # 放在图内
-        situation_3 = game_map_graph.get_vertex((local_x, local_y)).item is None  # 放在已经有士兵
-        situation_4 = type(c) is fireball or type(c) is lightening  # 法术的特殊情况
-        situation_5 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11  # 放在图内
+        # is put in 3 square in front of basement on map on x?
+        situation_1 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 4
+        # is it put in the game_map_graph on y?
+        situation_2 = square_size[1] <= pygame.mouse.get_pos()[1] <= square_size[1] * 7
+        # is the selected_square empty?
+        situation_3 = game_map_graph.get_vertex((local_x, local_y)).item is None
+        # is selected_card a magic?
+        situation_4 = type(c) is fireball or type(c) is lightening
+        #
+        situation_5 = square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11
 
         if situation_4 is False and situation_1 is False and situation_2 is True:
             print('You put the card out of range! Reput the card')
@@ -498,12 +520,13 @@ def ai_action() -> None:
         game_map_graph.get_vertex(c.location).item = c
     ai = Minimax_tree([])
 
+
 ################################################################
 # part4: main game process
 ################################################################
 
-while True:  # 游戏主进程
-    clock.tick(60)  # 每秒执行60次
+while True:  # The main process of the game.
+    clock.tick(60)  # Run 60 times a second.
     if turn_end is True:
         ai_action()
         term += 1
@@ -522,10 +545,10 @@ while True:  # 游戏主进程
             pygame.time.wait(5000)
             sys.exit()
         turn_end = False
-    for event in pygame.event.get():  # 获取事件
-        if event.type == pygame.QUIT:  # 如果点击退出（右上角X）
-            sys.exit()  # 系统退出
-        elif event.type == pygame.MOUSEBUTTONDOWN:  # 点击地图
+    for event in pygame.event.get():  # get what happen
+        if event.type == pygame.QUIT:  # if exit is clicked
+            sys.exit()  # system quit
+        elif event.type == pygame.MOUSEBUTTONDOWN:  # click the map
             if square_size[0] < pygame.mouse.get_pos()[0] < square_size[0] * 11 \
                     and square_size[1] < pygame.mouse.get_pos()[1] < square_size[1] * 7:
                 marked_square = graph_click(game_map_graph, event)
@@ -538,7 +561,7 @@ while True:  # 游戏主进程
                 selected_card = card_click(event)
                 if selected_card is not None:
                     enclose_selected_card(selected_card, clicked_card)
-    screen.fill(color)  # 填充颜色
+    screen.fill(color)  # fill the screen with color
     add_card_to_player_group_random()
     draw_all_visual_line()
     text_data_visualize(screen)
@@ -553,6 +576,6 @@ while True:  # 游戏主进程
     draw_cards_in_map()
     draw_bone_map(screen)
     draw_all_visual_line()
-    pygame.display.flip()  # 刷新显示
+    pygame.display.flip()  # refresh the screen with new screen blit.
 
 pygame.quit()

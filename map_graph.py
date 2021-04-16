@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import copy
+
 from card import *
 from graph import Graph
 from typing import Any, Union
