@@ -21,6 +21,7 @@ class Minimax_tree:
     def __init__(self, item: List[Any]):
         self.decition_mode = 3
         self.item = item
+        self.subtree = []
 
     def get_map(self, m: Map) -> None:
         self.situation = m
