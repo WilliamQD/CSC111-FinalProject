@@ -22,6 +22,7 @@ class Square:
     kind: Union[None, str]
     neighbours: dict[Square, bool]  # 在edge中增加bool属性以判断能否行走
     location: tuple
+    weight: float
 
     def __init__(self, location: tuple, item: Any, kind: Union[None, str]) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -33,6 +34,13 @@ class Square:
         self.kind = kind
         self.neighbours = {}
         self.location = location
+        if self.kind == 'volcano' or self.kind == 'river':
+            self.weight = 0.8 * self.location[0]
+        elif self.kind == 'forest' or self.kind == 'mountain':
+            self.weight = 1.2 * self.location[0]
+        else:
+            self.weight = 1 * self.location[0]
+
 
 
 class Map(Graph):
