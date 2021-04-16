@@ -122,14 +122,16 @@ class Minimax_tree:
         if is_ai_turn:
             for move in self.get_all_possible_action():
                 self.add_subtree(move)
+            max_num = -99999999.0
             for subtree in self.subtree:
-                max_num = -99999999.0
                 eva = subtree.min_max(False, depth=depth - 1)
-                return max(max_num, eva)
+                max_num = max(max_num, eva)
+            return max_num
         else:
             for move in self.get_all_possible_action():
                 self.add_subtree(move)
+            min_num = 99999999.0
             for subtree in self.subtree:
-                min_num = 99999999.0
                 eva = subtree.min_max(True, depth=depth - 1)
-                return min(min_num, eva)
+                min_num = min(min_num, eva)
+            return min_num
