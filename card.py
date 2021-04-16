@@ -150,7 +150,7 @@ class miniguner(card):
         self.max_hp = 20
         self.hp = 20
         self.attack = 5
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.location = location
         self.type = 'soldier'
         self.attack_system = 'light'
@@ -190,7 +190,7 @@ class charger(card):
         self.max_hp = 10
         self.hp = 10
         self.attack = 15
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'light'
@@ -229,7 +229,7 @@ class sniper(card):
         self.max_hp = 5
         self.hp = 5
         self.attack = 20
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.defend_system = 'light'
@@ -270,7 +270,7 @@ class rocketer(card):
         self.max_hp = 10
         self.hp = 10
         self.attack = 15
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.defend_system = 'heavy'
@@ -311,7 +311,7 @@ class doctor(card):
         self.max_hp = 10
         self.hp = 10
         self.attack = 8
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = None
         self.defend_system = 'light'
@@ -351,7 +351,7 @@ class ninja(card):
         self.max_hp = 10
         self.hp = 10
         self.attack = 10
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'light'
@@ -378,7 +378,7 @@ class fireball(card):
     """The class of fire ball.
     """
     attack: int
-    weight: int
+    weight: Any
     type: str
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
@@ -387,7 +387,7 @@ class fireball(card):
         super().__init__([image_fireball, image_fireball_card, image_fireball_square],
                          location, direction, value=10)
         self.attack = 10
-        self.weight = ...
+        self.weight = None
         self.type = 'magic'
 
 
@@ -395,7 +395,7 @@ class lightening(card):
     """The class of lightening.
     """
     attack: int
-    weight: int
+    weight: Any
     type: str
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
@@ -404,7 +404,7 @@ class lightening(card):
         super().__init__([image_lightening, image_lightening_card, image_lightening_square],
                          location, direction, value=10)
         self.attack = 20
-        self.weight = ...
+        self.weight = None
         self.type = 'magic'
 
 
@@ -414,8 +414,9 @@ class mine(card):
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: Any
     type: str
+    defend_system: str
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
@@ -425,8 +426,9 @@ class mine(card):
         self.max_hp = 10
         self.hp = 10
         self.attack = 0
-        self.weight = ...
+        self.weight = 10
         self.type = 'building'
+        self.defend_system = 'heavy'
 
 
 class autogun(card):
@@ -449,7 +451,7 @@ class autogun(card):
         self.max_hp = 20
         self.hp = 20
         self.attack = 5
-        self.weight = ...
+        self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'building'
         self.attack_system = 'heavy'
         self.defend_system = 'heavy'
