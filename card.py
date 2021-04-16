@@ -146,10 +146,10 @@ class miniguner(card):
         """initialize the function.
         """
         super().__init__([image_miniguner, image_miniguner_card, image_miniguner_square],
-                         location, direction, value=5)
-        self.max_hp = 20
-        self.hp = 20
-        self.attack = 5
+                         location, direction, value=35)
+        self.max_hp = 35
+        self.hp = 35
+        self.attack = 10
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.location = location
         self.type = 'soldier'
@@ -186,10 +186,10 @@ class charger(card):
         """initialize the function.
         """
         super().__init__([image_charger, image_charger_card, image_charger_square],
-                         location, direction, value=5)
-        self.max_hp = 10
-        self.hp = 10
-        self.attack = 15
+                         location, direction, value=15)
+        self.max_hp = 20
+        self.hp = 20
+        self.attack = 10
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'light'
@@ -225,10 +225,10 @@ class sniper(card):
         """initialize the function.
         """
         super().__init__([image_sniper, image_sniper_card, image_sniper_square],
-                         location, direction, value=7)
-        self.max_hp = 5
-        self.hp = 5
-        self.attack = 20
+                         location, direction, value=45)
+        self.max_hp = 20
+        self.hp = 20
+        self.attack = 25
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'heavy'
@@ -266,10 +266,10 @@ class rocketer(card):
         """initialize the function.
         """
         super().__init__([image_rocketer, image_rocketer_card, image_rocketer_square],
-                         location, direction, value=5)
-        self.max_hp = 10
-        self.hp = 10
-        self.attack = 15
+                         location, direction, value=20)
+        self.max_hp = 30
+        self.hp = 30
+        self.attack = 20
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'heavy'
@@ -307,10 +307,10 @@ class doctor(card):
         """initialize the function.
         """
         super().__init__([image_doctor, image_doctor_card, image_doctor_square],
-                         location, direction, value=5)
-        self.max_hp = 10
-        self.hp = 10
-        self.attack = 8
+                         location, direction, value=25)
+        self.max_hp = 25
+        self.hp = 25
+        self.attack = 10
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = None
@@ -347,10 +347,10 @@ class ninja(card):
         """initialize the function.
         """
         super().__init__([image_ninja, image_ninja_card, image_ninja_square, location],
-                         location, direction, value=7)
-        self.max_hp = 10
-        self.hp = 10
-        self.attack = 10
+                         location, direction, value=30)
+        self.max_hp = 15
+        self.hp = 15
+        self.attack = 20
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'soldier'
         self.attack_system = 'light'
@@ -402,7 +402,7 @@ class lightening(card):
         """initialize the function.
         """
         super().__init__([image_lightening, image_lightening_card, image_lightening_square],
-                         location, direction, value=10)
+                         location, direction, value=25)
         self.attack = 20
         self.weight = None
         self.type = 'magic'
@@ -424,7 +424,7 @@ class mine(card):
         super().__init__([image_mine, image_mine_card, image_mine_square],
                          location, direction, value=10)
         self.max_hp = 10
-        self.hp = 10
+        self.hp = 25
         self.attack = 0
         self.weight = 10
         self.type = 'building'
@@ -447,10 +447,10 @@ class autogun(card):
         """initialize the function.
         """
         super().__init__([image_autogun, image_autogun_card, image_autogun_square],
-                         location, direction, value=10)
-        self.max_hp = 20
-        self.hp = 20
-        self.attack = 5
+                         location, direction, value=25)
+        self.max_hp = 40
+        self.hp = 40
+        self.attack = 10
         self.weight = int((self.attack * 3 + self.hp) / self.value)
         self.type = 'building'
         self.attack_system = 'heavy'
