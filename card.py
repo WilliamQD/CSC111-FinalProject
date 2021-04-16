@@ -63,7 +63,7 @@ image_autogun_square = pygame.transform.scale(image_autogun, (int(square_size[0]
                                                               int(square_size[1] * 0.8)))
 
 
-class card:
+class Card:
     """The attribute class of card.
     Instance Attributes:
         - images: The images for a card on visualization
@@ -129,7 +129,7 @@ class card:
             return (real_location[0] - 1, real_location[1] - 1)
 
 
-class miniguner(card):
+class miniguner(Card):
     """The class of miniguner.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -184,7 +184,7 @@ class miniguner(card):
         target.hp -= int(self.attack * mult_pow)
 
 
-class charger(card):
+class charger(Card):
     """The class of charger.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -240,7 +240,7 @@ class charger(card):
         target.hp = int(target.hp - self.attack * mult_pow)
 
 
-class sniper(card):
+class sniper(Card):
     """The class of sniper.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -298,7 +298,7 @@ class sniper(card):
         target.hp = int(target.hp - self.attack * mult_pow)
 
 
-class rocketer(card):
+class rocketer(Card):
     """The class of rocketer.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -356,7 +356,7 @@ class rocketer(card):
         target.hp = int(target.hp - self.attack * mult_pow)
 
 
-class doctor(card):
+class doctor(Card):
     """The class of doctor.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -414,7 +414,7 @@ class doctor(card):
             target.hp += self.attack
 
 
-class ninja(card):
+class ninja(Card):
     """The class of ninja.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -476,7 +476,7 @@ class ninja(card):
         target.hp = int(target.hp - self.attack * mult_pow)
 
 
-class fireball(card):
+class fireball(Card):
     """The class of fire ball.
     Instance Attributes:
         - attack: A int represents the damage of this card's attack
@@ -500,7 +500,7 @@ class fireball(card):
         self.type = 'magic'
 
 
-class lightening(card):
+class lightening(Card):
     """The class of lightening.
     Instance Attributes:
         - attack: A int represents the damage of this card's attack
@@ -524,7 +524,7 @@ class lightening(card):
         self.type = 'magic'
 
 
-class mine(card):
+class mine(Card):
     """The class of mine.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
@@ -565,7 +565,7 @@ class mine(card):
         self.defend_system = 'heavy'
 
 
-class autogun(card):
+class autogun(Card):
     """The class of autogun.
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card

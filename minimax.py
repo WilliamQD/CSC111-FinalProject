@@ -4,7 +4,7 @@ from map_graph import Map
 
 from typing import Any, Optional, List
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
-    fireball, lightening, mine, autogun, card
+    fireball, lightening, mine, autogun, Card
 
 
 class Minimax_tree:
@@ -35,9 +35,11 @@ class Minimax_tree:
             for y in range(1, 7):
                 if self.situation.get_vertex((x, y)).item is not None:
                     if self.situation.get_vertex((x, y)).item.direction == 'right':
-                        player_score += self.situation.get_vertex((x, y)).item.weight
+                        player_score += self.situation.get_vertex((x, y)).item.weight \
+                                        * self.situation.get_vertex((x, y)).weight
                     elif self.situation.get_vertex((x, y)).item.direction == 'left':
-                        ai_score += self.situation.get_vertex((x, y)).item.weight
+                        ai_score += self.situation.get_vertex((x, y)).item.weight \
+                                        * self.situation.get_vertex((x, y)).weight
         return ai_score - player_score
 
     def highest_row_score_calculate(self) -> int:
@@ -57,7 +59,7 @@ class Minimax_tree:
         highest = max(result)
         return result.index(highest) + 1
 
-    def add_subtree(self, move: card):
+    def add_subtree(self, move: Card):
 
         if type(move) is lightening or type(move) is fireball:
             new_situation = Map()
@@ -77,7 +79,7 @@ class Minimax_tree:
         print(self.situation.get_vertex(move.location).item == move)  # False -> True
         print(new_subtree.situation.get_vertex(move.location).item != move)  # False
 
-    def get_all_possible_action(self) -> list[card]:
+    def get_all_possible_action(self) -> list[Card]:
         result = []
         possible_card = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         possible_magic_location = []
@@ -122,7 +124,7 @@ class Minimax_tree:
                     result.append(autogun(j, 'left'))
         return result
 
-    def action_randomly(self) -> card:
+    def action_randomly(self) -> Card:
         return random.choice(self.get_all_possible_action())
 
     def action_by_minimax(self, is_ai_turn: bool, depth: int = 1):
