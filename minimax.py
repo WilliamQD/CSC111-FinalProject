@@ -20,26 +20,26 @@ from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
 
 
 class Minimax_tree:
-    """The decision tree which ai will use.
-    """
+    """The Decision Tree which the ai will use. Implemented using the Min-max algorithm"""
     subtree: list[Minimax_tree]
-    item: List  # stored what it have.
-    situation: Map  # store actual map.
-    memory: Any  # store the decition ai make.
+    item: List  # item takes the form [card, score].
+    situation: Map  # where the current map is stored.
     ai_score: float
     player_score: float
 
     def __init__(self, item: List[Any]):
+        """ Initialize a new Minimax Tree"""
         self.item = item
         self.subtree = []
 
     def get_map(self, m: Map) -> None:
+        """ Update the map to the Minimax Tree's situation"""
         self.situation = m
 
     def score_calculate(self) -> float:
-        """calculate the current score of the game based on how many units left for one side and
-        how many healths left
-        A score of negative means Player2 is winning, a score of positive means Player1 is winning.
+        """calculate the current score of the situation based on how many units left for each side.
+        A score of positive means the AI is winning, a score of negative means the player
+        is winning.
         """
         player_score = 0
         ai_score = 0
@@ -55,7 +55,9 @@ class Minimax_tree:
         return ai_score - player_score
 
     def highest_row_score_calculate(self) -> int:
-
+        """ Return the row number that is the most "dangerous" to the AI. That is,
+        the row with the highest Player units score
+        """
         result = []
         for y in range(1, 7):
             player_score = 0
@@ -72,7 +74,8 @@ class Minimax_tree:
         return result.index(highest) + 1
 
     def add_subtree(self, move: Card):
-
+        """ Add a subtree to self.subtrees, and create a new copy of the map
+         to the new subtree's situation"""
         if type(move) is lightening or type(move) is fireball:
             new_situation = Map()
         else:
@@ -90,6 +93,7 @@ class Minimax_tree:
         self.subtree.append(new_subtree)
 
     def get_all_possible_action(self) -> list[Card]:
+        """ Return all possible actions that can be used by the AI in the current turn."""
         result = []
         possible_card = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         possible_magic_location = []
@@ -135,28 +139,45 @@ class Minimax_tree:
         return result
 
     def action_randomly(self) -> Card:
+        """ Selects a random move from all possible action, and return the card (a card
+        contains the unit name and the location it will be placed)"""
         return random.choice(self.get_all_possible_action())
 
     def action_by_minimax(self, is_ai_turn: bool, depth: int = 1):
-        value = self.min_max(is_ai_turn, depth)
+        """ The main action used by our AI when difficulty is high.
+
+        Selects highest value using the minimax algorithm, then filter the cards with
+        that value by whether the card's location is on the same row as the row returned
+        by highest_row_score_calculate().
+        Lastly, select the correct card and return the card
+
+        """
+        self.min_max(is_ai_turn, depth)
         row_score = self.highest_row_score_calculate()
         correct_row_cards = []
         for subtree in self.subtree:
             if subtree.item[0].location[1] == row_score:
                 correct_row_cards.append(subtree.item)
-        max = correct_row_cards[0][1]
+        max_val = correct_row_cards[0][1]
         selected_card = correct_row_cards[0][0]
         for cards in correct_row_cards:
-            if cards[1] > max:
-                max = cards[1]
+            if cards[1] > max_val:
+                max_val = cards[1]
                 selected_card = cards[0]
         if selected_card.location[1] == row_score:
             return selected_card
+        # In theory, the function will not reach here because it will always find the correct card
+        # early return. This is for testing purpose solely.
         print("not suppose to be here")
         return random.choice(self.get_all_possible_action())
 
     def min_max(self, is_ai_turn: bool, depth: int) -> float:
-
+        """ The minimax algorithm our AI uses, returns the best choice for our AI.
+        The algorithm first adds all the possible moves to the subtree list, which calculate and
+        stores the score and corresponding move to the subtree's item.
+        Then, the minimax algorithm is ran and depending on the depth and whether it
+        is AI's turn, it either returns the highest score or the lowest score.
+        """
         if depth == 0:
             return self.score_calculate()
         # is_ai_turn should be true when the depth is odd, ex: 1, 3, 5
