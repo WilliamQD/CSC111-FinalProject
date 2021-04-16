@@ -419,6 +419,7 @@ class doctor(Card):
         """Attacking the given target.
         The given target should be subclass of card.
         NOTE: doctor's attack is not affected by any buff!!!
+        And, doctor can attack either forward and backward.
         """
         if target.hp + self.attack > target.max_hp:
             target.hp = target.max_hp
