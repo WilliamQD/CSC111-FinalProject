@@ -11,9 +11,9 @@ class Minimax_tree:
     """The decision tree which ai will use.
     """
     subtree: list[Minimax_tree]
-    item: List  # 存放单个决策步骤[card, score]
-    situation: Map  # 存放实际情况的地图
-    memory: Any  # 存放预测结果
+    item: List  # stored what it have.
+    situation: Map  # store actual map.
+    memory: Any  # store the decition ai make.
     ai_score: float
     player_score: float
 
@@ -74,8 +74,8 @@ class Minimax_tree:
         curr_score = new_subtree.score_calculate()
         new_subtree.item = [move, curr_score]
         self.subtree.append(new_subtree)
-        print(self.situation.get_vertex(move.location).item == move) # False -> True
-        print(new_subtree.situation.get_vertex(move.location).item != move) # False
+        print(self.situation.get_vertex(move.location).item == move)  # False -> True
+        print(new_subtree.situation.get_vertex(move.location).item != move)  # False
 
     def get_all_possible_action(self) -> list[card]:
         result = []

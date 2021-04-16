@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import copy
+
 from card import *
 from graph import Graph
 from typing import Any, Union
@@ -42,7 +45,6 @@ class Square:
             self.weight = 1 * self.location[0]
 
 
-
 class Map(Graph):
     """a graph that describe the map.
     The map is 6 * 10
@@ -71,10 +73,13 @@ class Map(Graph):
                     self.add_edge((x, y), (x, y + 1))
 
     def self_copy(self) -> Map:
-        """return self copy.
+        """return a copy of self.
         """
         copy_map = Map()
-        copy_map._vertices = self._vertices
+        for x in range(1, 11):
+            for y in range(1, 7):
+                if self.get_vertex((x, y)).item is not None:
+                    copy_map.get_vertex((x, y)).item = self.get_vertex((x, y)).item
         return copy_map
 
     # 此函数为自定义，功能为判定是否可以通过
