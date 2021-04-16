@@ -8,7 +8,7 @@ from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, card
 from minimax import Minimax_tree
 
-pygame.init()  # 初始化pygame
+pygame.init()  # initialize pygame
 size = (640, 480)  # 设置窗口
 screen = pygame.display.set_mode(size)  # 显示窗口
 color = THECOLORS['white']  # 设置颜色
@@ -55,7 +55,6 @@ image_background = ...  # 加载背景图片（自制地图）
 def draw_text(surface: pygame.Surface, text: str, pos: tuple[int, int],
               text_size: int = 22) -> None:
     """Draw the given text to the pygame screen at the given position.
-
     pos represents the *upper-left corner* of the text.
     """
     font = pygame.font.SysFont('inconsolata', text_size)
@@ -76,6 +75,26 @@ def draw_all_image() -> None:
                       (location[0], location[1] + square_size[1] * 1.7))
 
 
+def fill_color_by_map() -> None:
+    for x in range(1, 11):
+        for y in range(1, 7):
+            if game_map_graph.get_vertex((x, y)).kind == 'volcano':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['red'], rec)
+            elif game_map_graph.get_vertex((x, y)).kind == 'forest':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['green'], rec)
+            elif game_map_graph.get_vertex((x, y)).kind == 'mountain':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['yellow'], rec)
+            elif game_map_graph.get_vertex((x, y)).kind == 'river':
+                rec = pygame.Rect(square_size[0] * x, square_size[0] * y, square_size[0],
+                                  square_size[1])
+                screen.fill(THECOLORS['blue'], rec)
+
 def draw_bone_map(surface: pygame.Surface) -> None:
     """draw the bone map with line.
     The map is in size of 6(+3) * 10(+2)
@@ -93,6 +112,8 @@ def draw_bone_map(surface: pygame.Surface) -> None:
     for i in range(1, 12):
         pygame.draw.line(surface, line_color, (square_size[0] * i, square_size[1]),
                          (square_size[0] * i, square_size[1] * 7))
+
+    fill_color_by_map()
 
 
 def draw_all_visual_line() -> None:
@@ -497,6 +518,7 @@ def ai_action() -> None:
     else:
         game_map_graph.get_vertex(c.location).item = c
     ai = Minimax_tree([])
+
 
 ################################################################
 # part4: main game process
