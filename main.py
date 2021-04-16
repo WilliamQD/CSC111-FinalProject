@@ -72,7 +72,7 @@ def draw_all_image() -> None:
         if player_card_group[x] is not None:
             location = player_card_group[x].get_real_location()
             screen.blit(player_card_group[x].images[player_card_group[x].display_mode], location)
-            draw_text(screen, str(player_card_group[x].value * 2),
+            draw_text(screen, str(player_card_group[x].value),
                       (location[0], location[1] + square_size[1] * 1.7))
 
 
@@ -490,8 +490,7 @@ def ai_action() -> None:
     """
     global game_map_graph, ai
     ai.get_map(game_map_graph.self_copy())
-    c = ai.action_by_minimax(is_ai_turn=True, depth=1)
-    print(c, c.attack)
+    c = ai.action_randomly()
     if type(c) is fireball or type(c) is lightening:
         magic_map_graph.get_vertex(c.location).item = c
     else:
@@ -535,8 +534,8 @@ while True:  # 游戏主进程
                 else:
                     clicked_map = False
             elif square_size[1] * 7 < pygame.mouse.get_pos()[1]:
-                if card_click(event) is not None:
-                    selected_card = card_click(event)
+                selected_card = card_click(event)
+                if selected_card is not None:
                     enclose_selected_card(selected_card, clicked_card)
     screen.fill(color)  # 填充颜色
     add_card_to_player_group_random()
