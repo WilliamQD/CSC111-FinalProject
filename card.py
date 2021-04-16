@@ -131,7 +131,6 @@ class card:
 
 class miniguner(card):
     """The class of miniguner.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -145,7 +144,6 @@ class miniguner(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system in {'light', 'heavy'}
@@ -188,7 +186,6 @@ class miniguner(card):
 
 class charger(card):
     """The class of charger.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -202,7 +199,6 @@ class charger(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system in {'light', 'heavy'}
@@ -246,7 +242,6 @@ class charger(card):
 
 class sniper(card):
     """The class of sniper.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -260,7 +255,6 @@ class sniper(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system in {'light', 'heavy'}
@@ -306,7 +300,6 @@ class sniper(card):
 
 class rocketer(card):
     """The class of rocketer.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -320,7 +313,6 @@ class rocketer(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system in {'light', 'heavy'}
@@ -366,7 +358,6 @@ class rocketer(card):
 
 class doctor(card):
     """The class of doctor.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -382,7 +373,6 @@ class doctor(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system is None
@@ -426,7 +416,6 @@ class doctor(card):
 
 class ninja(card):
     """The class of ninja.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -440,7 +429,6 @@ class ninja(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system in {'light', 'heavy'}
@@ -490,13 +478,11 @@ class ninja(card):
 
 class fireball(card):
     """The class of fire ball.
-
     Instance Attributes:
         - attack: A int represents the damage of this card's attack
         - weight: A float represents the weight of how AI chooses the card in a given round.
         - type: A string represents that what type of this card is,
         such as soldier, magic, or building.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
     """
@@ -516,13 +502,11 @@ class fireball(card):
 
 class lightening(card):
     """The class of lightening.
-
     Instance Attributes:
         - attack: A int represents the damage of this card's attack
         - weight: A float represents the weight of how AI chooses the card in a given round.
         - type: A string represents that what type of this card is,
         such as soldier, magic, or building.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
     """
@@ -542,7 +526,6 @@ class lightening(card):
 
 class mine(card):
     """The class of mine.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -557,7 +540,6 @@ class mine(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system is None
@@ -585,7 +567,6 @@ class mine(card):
 
 class autogun(card):
     """The class of autogun.
-
     Instance Attributes:
         - max_hp: A int represents the maximum of the hp of this card
         - hp: A int represents the current hp of this card.
@@ -599,7 +580,6 @@ class autogun(card):
         - defend_system: A string represents what buff or de-buff
         does this card will had when it has been attacked by a given enemy (subclass of card).
         - range: A int represents that how many square can this card attack forward.
-
     Precondition:
         - type in {'soldier', 'magic', 'building'}
         - attack_system in {'light', 'heavy'}

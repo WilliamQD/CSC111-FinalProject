@@ -30,7 +30,6 @@ class Square:
     def __init__(self, location: tuple, item: Any, kind: Union[None, str]) -> None:
         """Initialize a new vertex with the given item and kind.
         This vertex is initialized with no neighbours.
-
         Preconditions:
             - kind in {'volcano', 'forest', 'mountain', 'riven', 'grass land'}
         """
