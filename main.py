@@ -496,7 +496,7 @@ def ai_action() -> None:
         magic_map_graph.get_vertex(c.location).item = c
     else:
         game_map_graph.get_vertex(c.location).item = c
-
+    ai = Minimax_tree([])
 
 ################################################################
 # part4: main game process

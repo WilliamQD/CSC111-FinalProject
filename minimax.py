@@ -56,9 +56,9 @@ class Minimax_tree:
                         player_score += self.situation.get_vertex((x, y)).item.weight
                     elif self.situation.get_vertex((x, y)).item.direction == 'left':
                         ai_score += self.situation.get_vertex((x, y)).item.weight
-            result.append(ai_score - player_score)
+            result.append(player_score - ai_score)
         highest = max(result)
-        return result.index(highest)
+        return result.index(highest) + 1
 
     def add_subtree(self, move: card):
 
@@ -110,12 +110,12 @@ class Minimax_tree:
             elif i == 6:
                 for j in possible_other_location:
                     result.append(ninja(j, 'left'))
-            elif i == 7:
-                for j in possible_magic_location:
-                    result.append(fireball(j, 'left'))
-            elif i == 8:
-                for j in possible_magic_location:
-                    result.append(lightening(j, 'left'))
+            # elif i == 7:
+            #     for j in possible_magic_location:
+            #         result.append(fireball(j, 'left'))
+            # elif i == 8:
+            #     for j in possible_magic_location:
+            #         result.append(lightening(j, 'left'))
             elif i == 9:
                 for j in possible_other_location:
                     result.append(mine(j, 'left'))
@@ -130,9 +130,11 @@ class Minimax_tree:
     def action_by_minimax(self, is_ai_turn: bool, depth: int = 1):
 
         value = self.min_max(is_ai_turn, depth)
+        row_score = self.highest_row_score_calculate()
+        print(row_score)
         for subtree in self.subtree:
             # If the subtree has the given score of value, then return that action in that subtree
-            if subtree.item[1] == value:
+            if subtree.item[1] == value and subtree.item[0].location[1] == row_score:
                 return subtree.item[0]
 
     def min_max(self, is_ai_turn: bool, depth: int) -> float:
