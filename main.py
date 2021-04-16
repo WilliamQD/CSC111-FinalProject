@@ -506,12 +506,31 @@ def card_click(event: pygame.event.Event) -> Optional[card]:
 ################################################################
 # part5: ai operation
 ################################################################
-def ai_action() -> None:
+def ai_action(difficulty: int = 1) -> None:
     """The function which ai make its action
+
+    Difficulty is an integer between 1 and 4, inclusive, the higher the difficulty, the less
+    -random the AI acts, which means it is more likely to make good choices following the AI
+    min-max algorithm.
     """
+    random_scale = 0
+    if difficulty == 1:
+        random_scale = 1
+    elif difficulty == 2:
+        random_scale = 0.75
+    elif difficulty == 3:
+        random_scale = 0.5
+    else:
+        random_scale = 0.25
+
     global game_map_graph, ai
     ai.get_map(game_map_graph.self_copy())
-    c = ai.action_by_minimax(True, 1)
+    if random.random() <= random_scale:
+        c = ai.action_randomly()
+    else:
+        # Change the depth of the minimax algorithm here, between 1 and 3 inclusive
+        # (advice on not choosing 3 since it takes very very long)
+        c = ai.action_by_minimax(True, 1)
     print(c, c.location)
     if type(c) is fireball or type(c) is lightening:
         magic_map_graph.get_vertex(c.location).item = c
@@ -527,6 +546,7 @@ def ai_action() -> None:
 while True:  # 游戏主进程
     clock.tick(60)  # 每秒执行60次
     if turn_end is True:
+        # Change the difficulty of the AI here
         ai_action()
         term += 1
         money_increase()
