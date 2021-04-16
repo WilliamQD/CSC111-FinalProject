@@ -1,8 +1,20 @@
+"""This Python module contains the Minimax_tree class.
+
+Copyright and Usage Information
+===============================
+
+This program is provided solely for the personal and private use of teachers and TAs
+checking and grading the CSC111 project at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited.
+
+This file is Copyright (c) 2021 Alex Lin, Steven Liu, Haitao Zeng, William Zhang.
+"""
 from __future__ import annotations
 import random
 from map_graph import Map
 
-from typing import Any, Optional, List
+from typing import Any, List
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, Card
 
@@ -39,7 +51,7 @@ class Minimax_tree:
                                         * self.situation.get_vertex((x, y)).weight
                     elif self.situation.get_vertex((x, y)).item.direction == 'left':
                         ai_score += self.situation.get_vertex((x, y)).item.weight \
-                                        * self.situation.get_vertex((x, y)).weight
+                                    * self.situation.get_vertex((x, y)).weight
         return ai_score - player_score
 
     def highest_row_score_calculate(self) -> int:
@@ -76,8 +88,6 @@ class Minimax_tree:
         curr_score = new_subtree.score_calculate()
         new_subtree.item = [move, curr_score]
         self.subtree.append(new_subtree)
-        print(self.situation.get_vertex(move.location).item == move)  # False -> True
-        print(new_subtree.situation.get_vertex(move.location).item != move)  # False
 
     def get_all_possible_action(self) -> list[Card]:
         result = []
@@ -128,20 +138,26 @@ class Minimax_tree:
         return random.choice(self.get_all_possible_action())
 
     def action_by_minimax(self, is_ai_turn: bool, depth: int = 1):
-        print(self.score_calculate())
         value = self.min_max(is_ai_turn, depth)
-        print(333, self.score_calculate())
         row_score = self.highest_row_score_calculate()
+        correct_row_cards = []
         for subtree in self.subtree:
-            # If the subtree has the given score of value, then return that action in that subtree
-            if subtree.item[1] == value and subtree.item[0].location[1] == row_score:
-                return subtree.item[0]
+            if subtree.item[0].location[1] == row_score:
+                correct_row_cards.append(subtree.item)
+        max = correct_row_cards[0][1]
+        selected_card = correct_row_cards[0][0]
+        for cards in correct_row_cards:
+            if cards[1] > max:
+                max = cards[1]
+                selected_card = cards[0]
+        if selected_card.location[1] == row_score:
+            return selected_card
+        print("not suppose to be here")
         return random.choice(self.get_all_possible_action())
 
     def min_max(self, is_ai_turn: bool, depth: int) -> float:
 
         if depth == 0:
-            print(self.score_calculate(), self.item[0], self.item[1])
             return self.score_calculate()
         # is_ai_turn should be true when the depth is odd, ex: 1, 3, 5
         if is_ai_turn:
