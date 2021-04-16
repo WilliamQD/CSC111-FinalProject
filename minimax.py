@@ -44,6 +44,22 @@ class Minimax_tree:
                         ai_score += self.situation.get_vertex((x, y)).item.weight
         return ai_score - player_score
 
+    def highest_row_score_calculate(self) -> int:
+
+        result = []
+        for y in range(1, 7):
+            player_score = 0
+            ai_score = 0
+            for x in range(1, 11):
+                if self.situation.get_vertex((x, y)).item is not None:
+                    if self.situation.get_vertex((x, y)).item.direction == 'right':
+                        player_score += self.situation.get_vertex((x, y)).item.weight
+                    elif self.situation.get_vertex((x, y)).item.direction == 'left':
+                        ai_score += self.situation.get_vertex((x, y)).item.weight
+            result.append(ai_score - player_score)
+        highest = max(result)
+        return result.index(highest)
+
     def add_subtree(self, move: card):
 
         if type(move) is lightening or type(move) is fireball:
