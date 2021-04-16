@@ -3,7 +3,7 @@ import sys
 import random
 from pygame.colordict import THECOLORS
 from map_graph import Map, Square
-from typing import Any, Optional
+from typing import Optional
 from card import miniguner, charger, sniper, rocketer, doctor, ninja, \
     fireball, lightening, mine, autogun, Card
 from minimax import Minimax_tree
@@ -45,7 +45,7 @@ color_group = {}  # a group to control the line color.
 text_group = {}  # same as color group.
 
 # 加载地图图片
-image_background = pygame.image.load('Resources/background.png')  # 加载背景图片（自制地图）
+image_background = pygame.image.load('Resources/background2.png')  # 加载背景图片（自制地图）
 image_background_suitable = pygame.transform.scale(image_background, (int(square_size[0] * 10),
                                                                       int(square_size[1] * 6)))
 
@@ -539,7 +539,7 @@ while True:  # The main process of the game.
                     decition_act = True
                 else:
                     clicked_map = False
-            elif square_size[1] * 7 < pygame.mouse.get_pos()[1]:
+            elif square_size[1] * 7 < pygame.mouse.get_pos()[1] and selected_card is None:
                 selected_card = card_click(event)
                 if selected_card is not None:
                     enclose_selected_card(selected_card, clicked_card)
