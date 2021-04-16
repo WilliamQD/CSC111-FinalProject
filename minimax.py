@@ -47,7 +47,7 @@ class Minimax_tree:
         # Obtain a new map with the move executed (card being placed on that location)
         self.situation.get_vertex(move.location).item = move
         new_situation = self.situation
-        self.situation.get_vertex(card.location).item = None
+        self.situation.get_vertex(move.location).item = None
 
         # Create a new subtree branch with the item being the new card
         # and the score of the new map
