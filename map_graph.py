@@ -12,7 +12,7 @@ class Square:
         - neighbours: The vertices (squares) that are adjacent to this vertex (square).
         - location: A tuple represents location of this square on the map
     Preconditions:
-        - kind in {待输入}
+        - kind in {'volcano', 'forest', 'mountain', 'riven', 'grass land'}
         - self not in self.neighbours
         - all(self in u.neighbours for u in self.neighbours)
         - 1 <= location[0] <= 10
@@ -27,8 +27,9 @@ class Square:
     def __init__(self, location: tuple, item: Any, kind: Union[None, str]) -> None:
         """Initialize a new vertex with the given item and kind.
         This vertex is initialized with no neighbours.
+
         Preconditions:
-            - kind in {待输入}
+            - kind in {'volcano', 'forest', 'mountain', 'riven', 'grass land'}
         """
         self.item = item
         self.kind = kind
@@ -42,7 +43,6 @@ class Square:
             self.weight = 1 * self.location[0]
 
 
-
 class Map(Graph):
     """a graph that describe the map.
     The map is 6 * 10
@@ -54,11 +54,23 @@ class Map(Graph):
 
     def __init__(self) -> None:
         """Initialize an empty graph (no vertices or edges)."""
+        special_location = {'volcano': {(5, 1), (6, 1), (7, 1)},
+                            'forest': {(2, 3), (2, 4), (2, 5), (3, 4), (4, 2), (4, 3),
+                                       (5, 3), (9, 1), (9, 3), (9, 4), (10, 1), (10, 3)},
+                            'river': {(4, 6), (5, 6), (6, 4), (6, 5), (6, 6), (7, 3), (7, 4)},
+                            'mountain': {(2, 1), (3, 1), (3, 2), (3, 5), (3, 6),
+                                         (7, 5), (7, 6), (8, 5), (8, 6)}
+                            }
         super().__init__()
         for x in range(1, 11):
             for y in range(1, 7):
                 location = (x, y)
-                self._vertices[location] = Square(location, None, None)
+                kind_of_field = 'grass land'
+                for key in special_location:
+                    if location in special_location[key]:
+                        kind_of_field = key
+
+                self._vertices[location] = Square(location, None, kind_of_field)
 
         for y in range(1, 7):
             for x in range(1, 11):
@@ -71,10 +83,13 @@ class Map(Graph):
                     self.add_edge((x, y), (x, y + 1))
 
     def self_copy(self) -> Map:
-        """return self copy.
+        """return a copy of self.
         """
         copy_map = Map()
-        copy_map._vertices = self._vertices
+        for x in range(1, 11):
+            for y in range(1, 7):
+                if self.get_vertex((x, y)).item is not None:
+                    copy_map.get_vertex((x, y)).item = self.get_vertex((x, y)).item
         return copy_map
 
     # 此函数为自定义，功能为判定是否可以通过
@@ -105,7 +120,7 @@ class Map(Graph):
         lst = []
         for x in range(1, 7):
             for y in range(1, 11):
-                lst.append(self._vertices[(y, x)].location)
+                lst.append([self._vertices[(y, x)].location, self._vertices[(y, x)].kind])
             print(lst)
             lst = []
 

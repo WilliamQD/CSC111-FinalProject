@@ -131,31 +131,48 @@ class card:
 
 class miniguner(card):
     """The class of miniguner.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system in {'light', 'heavy'}
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: str
     defend_system: str
-    special: Any
     range: int
 
     def __init__(self, location: Optional[tuple], direction: str = ''):
         """initialize the function.
         """
         super().__init__([image_miniguner, image_miniguner_card, image_miniguner_square],
-                         location, direction, value=35)
+                         location, direction, value=30)
         self.max_hp = 35
         self.hp = 35
         self.attack = 10
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.location = location
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'heavy'
-        self.special = None
         self.range = 1
 
     def make_attack(self, target: Any) -> None:
@@ -171,11 +188,30 @@ class miniguner(card):
 
 class charger(card):
     """The class of charger.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system in {'light', 'heavy'}
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: str
     defend_system: str
@@ -187,10 +223,10 @@ class charger(card):
         """
         super().__init__([image_charger, image_charger_card, image_charger_square],
                          location, direction, value=15)
-        self.max_hp = 20
-        self.hp = 20
+        self.max_hp = 15
+        self.hp = 10
         self.attack = 10
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'light'
@@ -210,11 +246,30 @@ class charger(card):
 
 class sniper(card):
     """The class of sniper.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system in {'light', 'heavy'}
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: str
     defend_system: str
@@ -225,11 +280,11 @@ class sniper(card):
         """initialize the function.
         """
         super().__init__([image_sniper, image_sniper_card, image_sniper_square],
-                         location, direction, value=45)
+                         location, direction, value=35)
         self.max_hp = 20
         self.hp = 20
-        self.attack = 25
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.attack = 30
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.defend_system = 'light'
@@ -251,11 +306,30 @@ class sniper(card):
 
 class rocketer(card):
     """The class of rocketer.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system in {'light', 'heavy'}
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: str
     defend_system: str
@@ -270,7 +344,7 @@ class rocketer(card):
         self.max_hp = 30
         self.hp = 30
         self.attack = 20
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.type = 'soldier'
         self.attack_system = 'heavy'
         self.defend_system = 'heavy'
@@ -292,11 +366,32 @@ class rocketer(card):
 
 class doctor(card):
     """The class of doctor.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        NOTE: the attack of doctor will heal a ally who has the lowest percentage of hp.
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        NOTE: doctor has no attack_system (attack_system is None).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system is None
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: Optional[str]  # 医生设定不会攻击
     defend_system: str
@@ -311,7 +406,7 @@ class doctor(card):
         self.max_hp = 25
         self.hp = 25
         self.attack = 10
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.type = 'soldier'
         self.attack_system = None
         self.defend_system = 'light'
@@ -331,11 +426,30 @@ class doctor(card):
 
 class ninja(card):
     """The class of ninja.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system in {'light', 'heavy'}
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: str
     defend_system: str
@@ -351,7 +465,7 @@ class ninja(card):
         self.max_hp = 15
         self.hp = 15
         self.attack = 20
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.type = 'soldier'
         self.attack_system = 'light'
         self.defend_system = 'light'
@@ -376,6 +490,15 @@ class ninja(card):
 
 class fireball(card):
     """The class of fire ball.
+
+    Instance Attributes:
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
     """
     attack: int
     weight: Any
@@ -385,14 +508,23 @@ class fireball(card):
         """initialize the function.
         """
         super().__init__([image_fireball, image_fireball_card, image_fireball_square],
-                         location, direction, value=10)
-        self.attack = 10
+                         location, direction, value=20)
+        self.attack = 20
         self.weight = None
         self.type = 'magic'
 
 
 class lightening(card):
     """The class of lightening.
+
+    Instance Attributes:
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
     """
     attack: int
     weight: Any
@@ -410,6 +542,26 @@ class lightening(card):
 
 class mine(card):
     """The class of mine.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        NOTE: mine has no attack system (attack_system is None)
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system is None
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
@@ -426,18 +578,37 @@ class mine(card):
         self.max_hp = 10
         self.hp = 25
         self.attack = 0
-        self.weight = 10
+        self.weight = 2
         self.type = 'building'
         self.defend_system = 'heavy'
 
 
 class autogun(card):
     """The class of autogun.
+
+    Instance Attributes:
+        - max_hp: A int represents the maximum of the hp of this card
+        - hp: A int represents the current hp of this card.
+        The initial hp of this card is same as the max_hp.
+        - attack: A int represents the damage of this card's attack
+        - weight: A float represents the weight of how AI chooses the card in a given round.
+        - type: A string represents that what type of this card is,
+        such as soldier, magic, or building.
+        - attack_system: A string represents what buff or de-buff
+        does this card will had when it attack a given enemy (subclass of card).
+        - defend_system: A string represents what buff or de-buff
+        does this card will had when it has been attacked by a given enemy (subclass of card).
+        - range: A int represents that how many square can this card attack forward.
+
+    Precondition:
+        - type in {'soldier', 'magic', 'building'}
+        - attack_system in {'light', 'heavy'}
+        - defend_system in {'light', 'heavy'}
     """
     max_hp: int
     hp: int
     attack: int
-    weight: int
+    weight: float
     type: str
     attack_system: str
     defend_system: str
@@ -450,8 +621,8 @@ class autogun(card):
                          location, direction, value=25)
         self.max_hp = 40
         self.hp = 40
-        self.attack = 10
-        self.weight = int((self.attack * 3 + self.hp) / self.value)
+        self.attack = 15
+        self.weight = (self.attack * 3 + self.hp) / self.value
         self.type = 'building'
         self.attack_system = 'heavy'
         self.defend_system = 'heavy'
