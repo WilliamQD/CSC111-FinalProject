@@ -16,7 +16,7 @@ color = THECOLORS['white']  # 设置颜色
 speed = [5, 5]  # 设置移速（x， y）
 clock = pygame.time.Clock()  # 设置时钟
 term = 1  # 当前回合数
-money = 50  # 金钱
+money = 500  # 金钱
 my_hp = 100  # 我方hp
 enemy_hp = 100  # 敌方hp
 
@@ -490,7 +490,8 @@ def ai_action() -> None:
     """
     global game_map_graph, ai
     ai.get_map(game_map_graph.self_copy())
-    c = ai.action_randomly()
+    c = ai.action_by_minimax(True, 1)
+    print(c, c.location)
     if type(c) is fireball or type(c) is lightening:
         magic_map_graph.get_vertex(c.location).item = c
     else:

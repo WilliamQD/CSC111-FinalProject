@@ -18,6 +18,8 @@ class Minimax_tree:
     ai_score: float
     player_score: float
 
+
+
     def __init__(self, item: List[Any]):
         self.decition_mode = 3
         self.item = item
@@ -29,7 +31,6 @@ class Minimax_tree:
     def score_calculate(self) -> float:
         """calculate the current score of the game based on how many units left for one side and
         how many healths left
-
         A score of negative means Player2 is winning, a score of positive means Player1 is winning.
         """
         player_score = 0
@@ -45,10 +46,14 @@ class Minimax_tree:
 
     def add_subtree(self, move: card):
 
-        # Obtain a new map with the move executed (card being placed on that location)
-        self.situation.get_vertex(move.location).item = move
-        new_situation = self.situation
-        self.situation.get_vertex(move.location).item = None
+        if type(move) is lightening or type(move) is fireball:
+            new_situation = Map()
+        else:
+            # Obtain a new map with the move executed (card being placed on that location)
+            copy_map = self.situation.self_copy()
+            copy_map.get_vertex(move.location).item = move
+            new_situation = copy_map
+            copy_map.get_vertex(move.location).item = None
 
         # Create a new subtree branch with the item being the new card
         # and the score of the new map
